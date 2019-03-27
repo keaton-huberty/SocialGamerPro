@@ -1,0 +1,44 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jan 23, 2019, 1:31:45 PM
+    Author     : amin
+*/
+.root { 
+    /*-fx-background-image: url("background.png");*/
+    -fx-background-size:110px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position:  center 8px;
+    -fx-background-color:linear-gradient(lightgray, black);
+}
+
+.label {
+
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
+}
+
+.button {
+    -fx-text-fill: white;
+    -fx-font-family: "Arial Narrow";
+    -fx-font-weight: bold;
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-padding: 10px;
+    -fx-background-insets: 5px;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+.button:hover {
+    -fx-background-color: linear-gradient(orange, orangered );
+}
+.text-field {
+    -fx-max-width: 200;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
