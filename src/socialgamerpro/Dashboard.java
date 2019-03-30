@@ -199,16 +199,6 @@ public class Dashboard {
             }
         });
 
-        //Exit Button
-        Button btnExit = new Button("Exit");
-        btnExit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                dashboardStage.close();
-
-                //Code for returning to the login page will go here
-            }
-        });
         Text tab5 = new Text("\t   ");
         HBox bioBox = new HBox();
         bioBox.getChildren().addAll(tab5, userBio);
@@ -221,10 +211,8 @@ public class Dashboard {
         btn.getChildren().addAll(tab3, btnAddGameUser, btnAddGameLibrary, editInfo, updateInfo);
         Separator horizSep = new Separator();
         horizSep.setOrientation(Orientation.HORIZONTAL);
-        HBox exitHbox = new HBox();
-        Text tab4 = new Text("\t    ");
-        exitHbox.getChildren().addAll(tab4, btnExit);
-        leftVbox.getChildren().addAll(topPane, exitHbox, bioLabel, bioBox, cLabel, table, btn, btnLabel1);
+
+        leftVbox.getChildren().addAll(topPane,  bioLabel, bioBox, cLabel, table, btn, btnLabel1);
         leftVbox.setAlignment(Pos.TOP_LEFT);
         leftVbox.setSpacing(10);
 
@@ -247,7 +235,8 @@ public class Dashboard {
         Text flLabel = new Text("Following");
         flLabel.setStyle("-fx-font: 24 arial;");
 
-        Text lable = new Text("Received Msgs");
+        Text label = new Text("Messages");
+        label.setStyle("-fx-font: 24 arial;");
         //send button
         Button sendButton = new Button("Send");
         //refresh button
@@ -255,10 +244,20 @@ public class Dashboard {
         refreshButton.setVisible(false);
         //del button
         Button delButton = new Button("Delete All");
+        //Exit Button
+        Button btnExit = new Button("Exit");
+        btnExit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                dashboardStage.close();
 
+                //Code for returning to the login page will go here
+            }
+        });
         //creating Hbox for buttons paralel to each other
         HBox buttons = new HBox();
-        buttons.getChildren().addAll(sendButton,delButton, refreshButton);
+        buttons.getChildren().addAll(sendButton,delButton, btnExit);
+        buttons.setSpacing(5);
         //making a text area
         TextArea textArea = TextAreaBuilder.create()
                 .prefWidth(100)
@@ -462,8 +461,13 @@ public class Dashboard {
         searchBox.setSpacing(20);
         //set search bar default value
         search.setPromptText("Username");
-        rightVbox.getChildren().addAll(searchBox, flLabel, friendsList, btnViewFollower, friends1, lable, scrollPane, msgType, buttons);
-
+        HBox followerBox = new HBox(flLabel, btnViewFollower);
+        followerBox.setSpacing(20);
+        friends1.setValue("Select a friend");
+        HBox messageHbox = new HBox(label, friends1);
+        messageHbox.setSpacing(20);
+        rightVbox.getChildren().addAll(searchBox, followerBox, friendsList, messageHbox, scrollPane, msgType, buttons);
+        rightVbox.setPrefWidth(300);
         //set up bottom pane
         Text bottomText = new Text("Created by Keaton, Will, Mike, and Amin (2019)");
 
