@@ -95,7 +95,7 @@ public class Dashboard {
 
         Button btnViewFollower = new Button("View Profile");
         Button btnViewFollowing = new Button("Search User");
-        //Button btnLogout = new Button("Logout");
+
 
         //vbox for holding name over current game
         VBox nameAndGame = new VBox();
@@ -199,10 +199,9 @@ public class Dashboard {
             }
         });
 
-        //Logout Button
-        Button btnLogout = new Button("Logout");
-        //Text btnLabel3 = new Text("");
-        btnLogout.setOnAction(new EventHandler<ActionEvent>() {
+        //Exit Button
+        Button btnExit = new Button("Exit");
+        btnExit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
                 dashboardStage.close();
@@ -222,10 +221,10 @@ public class Dashboard {
         btn.getChildren().addAll(tab3, btnAddGameUser, btnAddGameLibrary, editInfo, updateInfo);
         Separator horizSep = new Separator();
         horizSep.setOrientation(Orientation.HORIZONTAL);
-        HBox logoutHbox = new HBox();
+        HBox exitHbox = new HBox();
         Text tab4 = new Text("\t    ");
-        logoutHbox.getChildren().addAll(tab4, btnLogout);
-        leftVbox.getChildren().addAll(topPane, bioLabel, logoutHbox, bioBox, cLabel, table, btn, btnLabel1);
+        exitHbox.getChildren().addAll(tab4, btnExit);
+        leftVbox.getChildren().addAll(topPane, exitHbox, bioLabel, bioBox, cLabel, table, btn, btnLabel1);
         leftVbox.setAlignment(Pos.TOP_LEFT);
         leftVbox.setSpacing(10);
 
