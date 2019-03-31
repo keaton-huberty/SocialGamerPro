@@ -55,6 +55,7 @@ public class SocialGamerPro extends Application {
     private final ImageView imgViewLogo = new ImageView();
     private final Image imgLogo = new Image("background.png");
     private final Label wrongLogin = new Label("");
+    //private final Label forgotPassword = new Label("");
 
     private FileChooser fileChooser;
     private File file;
