@@ -85,44 +85,37 @@ public class Dashboard {
     public void launchDashboard() throws SQLException, IOException {
 
         Stage dashboardStage = new Stage();
-
         //sets title at top of window
-        dashboardStage.setTitle("SocialGamer Pro");
-        
+        dashboardStage.setTitle("SocialGamer Pro");       
         DBUtility db = new DBUtility();
-
-        db.dbConnect();
-        
-        Image blobPic = db.loadProfilePicture(this.userID);
-        
+        db.dbConnect();    
+        Image blobPic = db.loadProfilePicture(this.userID);      
         //set up left/top pane
-        //set up profile picture
-        
+        //set up profile picture        
         Image profilePic = new Image("userPic.png");
         //ImageView profilePicView = new ImageView(profilePic);
         ImageView profilePicView = new ImageView(blobPic);
         profilePicView.setPreserveRatio(true);
         profilePicView.setFitHeight(150);
-
+        //magnifying glass for search icon
+        Image searchIcon = new Image("search.png");
+        ImageView searchView = new ImageView(searchIcon);
+        searchView.setFitHeight(20);
+        searchView.setFitWidth(20);
+        //buttons
         Button btnViewFollower = new Button("View Profile");
-        Button btnViewFollowing = new Button("Search User");
-
-
+        Button btnViewFollowing = new Button();        
+        btnViewFollowing.setGraphic(searchView);
         //vbox for holding name over current game
         VBox nameAndGame = new VBox();
         TextField name = new TextField(fName + " " + lName);
         name.setDisable(true);
-
         name.setStyle("-fx-font: 24 arial;");
         Text currentGame = new Text("Now Playing: Call of Duty: Modern Warfare 2");
         currentGame.setStyle("fx-font: 16 arial;");
         nameAndGame.getChildren().addAll(name, currentGame);
         //flow pane for holding picture, name/game, and messages button
-        FlowPane topPane = new FlowPane();
         Text tab = new Text("\t   ");
-        //add to top pane
-        topPane.getChildren().addAll(tab, profilePicView, nameAndGame);
-        topPane.setHgap(10);
         nameAndGame.setAlignment(Pos.CENTER_LEFT);
 
         Image tableExample = new Image("sampleTable.png");
@@ -149,17 +142,17 @@ public class Dashboard {
 
         profilePicView.setPreserveRatio(true);
         VBox leftVbox = new VBox();
-        Text bioLabel = new Text("\tUser Biography");
+        Text bioLabel = new Text(" User Biography: ");
         bioLabel.setStyle("-fx-font: 24 arial;");
 
         TextField userBio = new TextField(bio);
         userBio.setDisable(true);
 
         userBio.setStyle("-fx-font: 18 arial; -fx-opacity: 1.0; -fx-control-inner-background: #DCDCDC;");
-        Text cLabel = new Text("\tGames I Play");
+        Text cLabel = new Text("\tGames I Play: ");
         cLabel.setStyle("-fx-font: 24 arial;");
-        Button btnAddGameUser = new Button("Add Game to my List");
-        Button btnAddGameLibrary = new Button("Add Game to Library");
+        Button btnAddGameUser = new Button("+ to List");
+        Button btnAddGameLibrary = new Button("+ to Library");
 
         Button editInfo = new Button("Edit Info");
         Button updateInfo = new Button("Update Info");
@@ -220,23 +213,25 @@ public class Dashboard {
         
 
         Text tab5 = new Text("\t   ");
-        HBox bioBox = new HBox();
-        bioBox.getChildren().addAll(tab5, userBio);
         Text tab2 = new Text("\t   ");
         HBox table = new HBox();
         table.getChildren().addAll(tab2, gamesTable);
-        Text tab3 = new Text("\t   ");
+        Text tab3 = new Text("\t ");
         HBox btn = new HBox();
         btn.setSpacing(8);
-        btn.getChildren().addAll(tab3, btnAddGameUser, btnAddGameLibrary, editInfo, updateInfo);
+        btn.getChildren().addAll(tab3, editInfo, updateInfo);
         Separator horizSep = new Separator();
         horizSep.setOrientation(Orientation.HORIZONTAL);
-        
-        HBox changeHbox = new HBox();
-        Text tab4 = new Text("\t    ");
-        changeHbox.getChildren().addAll(tab4, btnChangeProfilePic);
-
-        leftVbox.getChildren().addAll(topPane, changeHbox, bioLabel, bioBox, cLabel, table, btn, btnLabel1);
+        FlowPane topPane = new FlowPane();
+        HBox bioBox = new HBox(bioLabel, userBio);
+        VBox nameAndBio = new VBox(tab, name, bioBox);
+        nameAndBio.setSpacing(15);
+        //add to top pane
+        topPane.getChildren().addAll(tab, profilePicView, nameAndBio);
+        topPane.setHgap(10);
+        HBox gamesIPlayBox = new HBox(cLabel, btnAddGameUser, btnAddGameLibrary);
+        gamesIPlayBox.setSpacing(10);
+        leftVbox.getChildren().addAll(topPane, gamesIPlayBox, table, btn, btnLabel1);
         leftVbox.setAlignment(Pos.TOP_LEFT);
         leftVbox.setSpacing(10);
 
@@ -312,6 +307,7 @@ public class Dashboard {
 
         }
         friendsList.setPrefHeight(140);
+        friendsList.setPrefWidth(100);
         //setting place holder
         msgType.setPromptText("Type Msg here");
 
@@ -491,7 +487,7 @@ public class Dashboard {
         HBox messageHbox = new HBox(label, friends1);
         messageHbox.setSpacing(20);
         rightVbox.getChildren().addAll(searchBox, followerBox, friendsList, messageHbox, scrollPane, msgType, buttons);
-        rightVbox.setPrefWidth(300);
+        rightVbox.setPrefWidth(100);
         //set up bottom pane
         Text bottomText = new Text("Created by Keaton, Will, Mike, and Amin (2019)");
 
@@ -507,23 +503,27 @@ public class Dashboard {
 
         //create border pane with each part as set up above
         BorderPane bPane = new BorderPane();
-        bPane.setRight(rightVbox);
+        rightVbox.setMaxWidth(300);
+        bPane.setCenter(rightVbox);
         bPane.setBottom(bottomText);
         bPane.setLeft(leftVbox);
-
+        Insets insets = new Insets(15);
+        BorderPane.setMargin(rightVbox, insets);
+        BorderPane.setMargin(leftVbox, insets);
+        BorderPane.setMargin(bottomText, insets);
         //width, height of actual 
-        Scene dashboard = new Scene(bPane, 1100, 650);
+        Scene dashboard = new Scene(bPane, 500, 650);
 
         dashboard.getStylesheets().add(SocialGamerPro.class.getResource("SocialGamerStyle.css").toExternalForm());
 
         dashboardStage.setScene(dashboard);
         dashboardStage.setMinHeight(650);
-        dashboardStage.setMinWidth(1350);
+        dashboardStage.setMinWidth(1150);
 
         //primaryStage.close();
         dashboardStage.show();
         //set background color to a light grey
-        bPane.setStyle("-fx-background-color: #DCDCDC;");
+        bPane.setStyle("-fx-background-color: #8DAABA;");
          Thread thread = new Thread(){
                                     @Override
 				    public void run(){
@@ -625,8 +625,6 @@ public class Dashboard {
         Scene addGameDashboard = new Scene(sceneVBox);
 
         addGameStage.setScene(addGameDashboard);
-//        addGameStage.setMinHeight(450);
-//        addGameStage.setMinWidth(550);
 
         addGameStage.show();
 
@@ -788,7 +786,7 @@ public class Dashboard {
         bioLabel.setStyle("-fx-font: 24 arial;");
         Text userBio = new Text(bio);
         userBio.setStyle("-fx-font: 18 arial;");
-        Text cLabel = new Text("\tGames I Play");
+        Text cLabel = new Text("\tGames I Play: ");
         cLabel.setStyle("-fx-font: 24 arial;");
         Text btnLabel1 = new Text("");
 
