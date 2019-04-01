@@ -263,6 +263,22 @@ public class DBUtility {
 
     }
 
+        public void updateProfilePicture (String userName, File image) throws SQLException, FileNotFoundException, IOException {
+
+        stmt = conn.createStatement();
+        // this runs the SQL query - notice the extra single quotes around the string.  Don't forget those.
+        // stmt.executeUpdate("UPDATE userLogin SET Image VALUES ('" + image + "') WHERE userName = '" + userName + "'");
+
+        // Need to insert the Blob with a Prepared Statement.  This is done after the initial SQL INSERT INTO
+        FileInputStream fis = new FileInputStream(image);
+        ps = conn.prepareStatement("UPDATE userLogin SET Image = ? WHERE userName = ?");
+        ps.setBinaryStream(1, (InputStream) fis, (int) image.length());
+        ps.setString(2, userName);
+        ps.execute();
+        ps.close();
+
+    }
+
     // constructor
     public DBUtility() {
     }

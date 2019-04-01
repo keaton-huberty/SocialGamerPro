@@ -5,6 +5,7 @@
  */
 package socialgamerpro;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -25,8 +28,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
@@ -42,8 +47,10 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -59,6 +66,10 @@ public class Dashboard {
     
     private Statement stmt;
     private ResultSet resultSet;
+    
+    private Image image;
+    private FileChooser fileChooser;
+    private File file;
 
     public Dashboard(int userID, String userName, String fName, String lName, String bio) {
         this.userID = userID;
@@ -198,6 +209,15 @@ public class Dashboard {
                 addGameDashboard();
             }
         });
+        
+        //Change Profile Pic Button
+        Button btnChangeProfilePic = new Button(" Change Picture");
+        
+        btnChangeProfilePic.setOnAction((javafx.event.ActionEvent e) -> {
+
+            editProfilePicture();
+        });
+        
 
         Text tab5 = new Text("\t   ");
         HBox bioBox = new HBox();
@@ -211,8 +231,12 @@ public class Dashboard {
         btn.getChildren().addAll(tab3, btnAddGameUser, btnAddGameLibrary, editInfo, updateInfo);
         Separator horizSep = new Separator();
         horizSep.setOrientation(Orientation.HORIZONTAL);
+        
+        HBox changeHbox = new HBox();
+        Text tab4 = new Text("\t    ");
+        changeHbox.getChildren().addAll(tab4, btnChangeProfilePic);
 
-        leftVbox.getChildren().addAll(topPane,  bioLabel, bioBox, cLabel, table, btn, btnLabel1);
+        leftVbox.getChildren().addAll(topPane, changeHbox, bioLabel, bioBox, cLabel, table, btn, btnLabel1);
         leftVbox.setAlignment(Pos.TOP_LEFT);
         leftVbox.setSpacing(10);
 
@@ -836,6 +860,118 @@ public class Dashboard {
         dashboardStage.show();
         //set background color to a light grey
         bPane.setStyle("-fx-background-color: #DCDCDC;");
+
+    }
+
+    private void editProfilePicture() {
+
+        Button btnUpdatePic = new Button("Change Picture");
+        Button btnExit = new Button("Exit");
+        Button btnBrowse = new Button("Browse");
+        Label lbBrowsePath = new Label("");
+        ImageView imgProfile = new ImageView(image);
+
+        //Allows you to select an Image File
+        fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.gif")
+        );
+
+        Stage createAccountStage = new Stage();
+        //sets title at top of window
+        createAccountStage.setTitle("Update Profile Picture");
+
+        VBox vBox = new VBox();
+
+        GridPane gridpane = new GridPane();
+/*
+        StackPane logoStackpane = new StackPane();
+        imgViewLogo.setImage(imgLogo);
+        imgViewLogo.setFitHeight(150);
+        imgViewLogo.setPreserveRatio(true);
+        logoStackpane.getChildren().add(imgViewLogo);
+        logoStackpane.setPadding(new Insets(25));
+        //imgViewLogo.set
+        gridpane.add(lbUsernameNew, 0, 0);
+        gridpane.add(tfUsernameNew, 1, 0);
+        gridpane.add(lbPassword1, 0, 1);
+        gridpane.add(tfPassword1, 1, 1);
+        gridpane.add(lbPassword2, 0, 2);
+        gridpane.add(tfPassword2, 1, 2);
+        gridpane.add(lbFirstName, 0, 3);
+        gridpane.add(tfFirstName, 1, 3);
+        gridpane.add(lbLastName, 0, 4);
+        gridpane.add(tfLastName, 1, 4);
+        gridpane.add(lbEmail, 0, 5);
+        gridpane.add(tfEmail, 1, 5);
+        gridpane.add(lbDob, 0, 6);
+        gridpane.add(dpDob, 1, 6);
+*/
+        vBox.getChildren().addAll(gridpane, lbBrowsePath, btnBrowse, imgProfile, btnUpdatePic, btnExit);
+
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(10);
+
+        //width, height of actual scene
+        Scene createAccountDashboard = new Scene(vBox, 300, 300);
+        createAccountDashboard.getStylesheets().add(SocialGamerPro.class.getResource("Login.css").toExternalForm());
+
+        createAccountStage.setScene(createAccountDashboard);
+
+        createAccountStage.show();
+
+        btnUpdatePic.setOnAction((javafx.event.ActionEvent e) -> {
+            if (lbBrowsePath.getText().isEmpty()) {
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle("Empty Browse Field");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select a picture.");
+                alert.showAndWait();
+            } else {
+                     System.out.println("Update Picture Successful!");
+                    DBUtility dbNewAccount = new DBUtility();
+
+                    try {
+                        dbNewAccount.dbConnect();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    try {
+                        dbNewAccount.updateProfilePicture (userName, file);
+                    } catch (SQLException | IOException ex) {
+                        Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    try {
+                        dbNewAccount.dbClose();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+        });
+
+//closes the create account page and returns to login page
+        btnExit.setOnAction((javafx.event.ActionEvent e) -> {
+            createAccountStage.close();
+
+        });
+
+        btnBrowse.setOnAction((javafx.event.ActionEvent e) -> {
+            file = fileChooser.showOpenDialog(createAccountStage);
+            if (file != null) {
+                //desktop.open(file);
+                lbBrowsePath.setText(file.getAbsolutePath());
+                //image = new Image(path, width, height, preserved ratio, smooth);
+                image = new Image(file.toURI().toString(), 100, 150, true, true);
+                imgProfile.setImage(image);
+                imgProfile.setFitWidth(100);
+                imgProfile.setFitHeight(150);
+                imgProfile.setPreserveRatio(true);
+
+                //layout.setCenter(imgProfile);
+                //BorderPane.setAlignment(imgPro, Pos.TOP_LEFT);
+            }
+        });
 
     }
 
