@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.event.ActionEvent;
@@ -21,6 +23,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -51,6 +54,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -58,7 +62,7 @@ import javafx.stage.Stage;
  * @author Will
  */
 public class Dashboard {
-
+ public static boolean check=false;
     private String userName, fName, lName, bio;
     private int userID;
     private byte[] profilePicBlob;
@@ -263,6 +267,18 @@ public class Dashboard {
         refreshButton.setVisible(false);
         //del button
         Button delButton = new Button("Delete All");
+		 //creating Hbox for buttons paralel to each other
+        HBox buttons = new HBox();
+        buttons.getChildren().addAll(sendButton, refreshButton);
+        
+        Button RecentMsgs = new Button("Recent Messages");
+        Button AllMsgs = new Button("All Messages");
+        RecentMsgs.setOnAction((javafx.event.ActionEvent e) -> {
+            check=true;
+        });
+        AllMsgs.setOnAction((javafx.event.ActionEvent e) -> {
+            check=false;
+        });
         //Exit Button
         Button btnExit = new Button("Exit");
         btnExit.setOnAction(new EventHandler<ActionEvent>() {
@@ -274,8 +290,8 @@ public class Dashboard {
             }
         });
         //creating Hbox for buttons paralel to each other
-        HBox buttons = new HBox();
-        buttons.getChildren().addAll(sendButton,delButton, btnExit);
+       HBox recentAllHbox = new HBox();
+        recentAllHbox.getChildren().addAll(RecentMsgs, AllMsgs);
         buttons.setSpacing(5);
         //making a text area
         TextArea textArea = TextAreaBuilder.create()
@@ -312,22 +328,55 @@ public class Dashboard {
         msgType.setPromptText("Type Msg here");
 
         //        creating dropdown for friend selection
-        ComboBox friends1 = new ComboBox();
-//        friends1.getItems().addAll(
-//                                    "Mike",
-//                                    "Amin",
-//                                    "Keaton"
-//                                );
-        //getting all users from database to fill the dropdown
-        //DBUtility dbobj=new DBUtility();
+      ComboBox friends1 = new ComboBox();
+        friends1.setPromptText("select Friend To Send Msg");
+        
+        
+        //combo for select user to view msgs
+        ComboBox selectFriendToViewMsg = new ComboBox();
+        selectFriendToViewMsg.getItems().addAll("All");
+        selectFriendToViewMsg.setPromptText("select Friend To View Msg");
+        selectFriendToViewMsg.getSelectionModel().selectedItemProperty().addListener(
+        new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                try {
+                    //                throw new UnsupportedOperationException("Not supported yet.");
+                    
+                    String Sender=String.valueOf(selectFriendToViewMsg.getValue());
+                    //setting text in msg box for recieved msg
+                    ResultSet msgsForUser = dbobj.getMsgsforSpecificUser(userName,Sender,check);
+                    String setText = "";
+                     textArea.setText(setText);
+                    while (msgsForUser.next()) {
+                        //setting msgs into the text box
+                        String from = msgsForUser.getString("msgSender");
+                        String msgContent = msgsForUser.getString("msgContent");
+                        
+                        setText = setText + "From " + from + ":\n" + msgContent + "\n";
+                        textArea.setText(setText);
+                        
+                        
+                    }
+                    textArea.setScrollTop(Double.MAX_VALUE);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+       });
+        
+        
         ResultSet users = dbobj.getUsers();
         while (users.next()) {
             friends1.getItems().addAll(
                     users.getString("userName")//adding users in drop down from database
             );
-
+            selectFriendToViewMsg.getItems().addAll(
+                    users.getString("userName")//adding users in drop down from database
+            );
         }
-
+        
+        
         //adding listener to send button
         sendButton.setOnAction((javafx.event.ActionEvent e) -> {
             boolean isMyComboBoxEmpty = friends1.getSelectionModel().isEmpty();//to check if user is selected from dropdown
@@ -363,12 +412,38 @@ public class Dashboard {
         });
         //action listner of refresh button  
         refreshButton.setOnAction((javafx.event.ActionEvent e) -> {
+            
+            boolean isMyComboBoxEmpty = selectFriendToViewMsg.getSelectionModel().isEmpty();
+            if(!isMyComboBoxEmpty){
+                try {
+                    String Sender=String.valueOf(selectFriendToViewMsg.getValue());
+                    //setting text in msg box for recieved msg
+                    ResultSet msgsForUser = dbobj.getMsgsforSpecificUser(userName,Sender,check);
+                    String setText = "";
+                     textArea.setText(setText);
+                    while (msgsForUser.next()) {
+                        //setting msgs into the text box
+                        String from = msgsForUser.getString("msgSender");
+                        String msgContent = msgsForUser.getString("msgContent");
+                        
+                        setText = setText + "From " + from + ":\n" + msgContent + "\n";
+                        textArea.setText(setText);
+                        
+                        
+                    }
+                    textArea.setScrollTop(Double.MAX_VALUE);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return;
+                
+            }
             //setting text in msg box for recieved msg
             ResultSet msgs = null;
             ResultSet msgs1 = null;
             try {
-                msgs = dbobj.getMsg(userName);
-                msgs1 = dbobj.getMsg(userName);//second Resultset for checking if theres no msg
+                msgs = dbobj.getMsg(userName,check);
+                msgs1 = dbobj.getMsg(userName,check);//second Resultset for checking if theres no msg
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -377,6 +452,7 @@ public class Dashboard {
             try {
                 if (msgs1.next() == false) {
                     textArea.setText("");
+                    textArea.setScrollTop(Double.MAX_VALUE);
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
@@ -391,8 +467,10 @@ public class Dashboard {
 
                     setText = setText + "From " + from + ":\n" + msgContent + "\n";
                     textArea.setText(setText);
+                    
 
                 }
+                textArea.setScrollTop(Double.MAX_VALUE);
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -414,7 +492,7 @@ public class Dashboard {
         });
 
         //setting text in msg box for recieved msg
-        ResultSet msgs = dbobj.getMsg(userName);
+        ResultSet msgs = dbobj.getMsg(userName,check);
         String setText = "";
 
         while (msgs.next()) {
@@ -424,8 +502,9 @@ public class Dashboard {
 
             setText = setText + "From " + from + ":\n" + msgContent + "\n";
             textArea.setText(setText);
-
+            
         }
+		 textArea.setScrollTop(Double.MAX_VALUE);
         //set up search bar for finding users
         ComboBox search = new ComboBox();
         search.setEditable(true);

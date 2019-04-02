@@ -231,14 +231,35 @@ public class DBUtility {
 
     }
 
-    //method for getting msgs
-    public ResultSet getMsg(String receiver) throws SQLException {
+     //method for getting msgs
+    public ResultSet getMsg(String receiver,boolean check) throws SQLException {
 
 //        dbConnect();
         //first have to creat a statement
         stmt = conn.createStatement();
-        // this runs the SQL query - notice the extra single quotes around the string.  Don't forget those.
-        resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "'");
+        if(check){
+            resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "' ORDER by msgID desc limit 3");
+        }else{
+            resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "'");
+        }
+        return resultSet;
+    }
+     public ResultSet getMsgsforSpecificUser(String receiver,String sender,boolean check) throws SQLException {
+
+        stmt = conn.createStatement();
+        if (check){
+            if(sender.equalsIgnoreCase("all")){
+            resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "' ORDER by msgID desc limit 3");
+            }else{
+                resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "' and msgSender = '" + sender + "' ORDER by msgID desc limit 3");
+            }
+        }else{
+            if(sender.equalsIgnoreCase("all")){
+                resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "'");
+            }else{
+                resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "' and msgSender = '" + sender + "'");
+            }
+        }
         return resultSet;
     }
 
