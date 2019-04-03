@@ -219,7 +219,7 @@ public class Dashboard {
         Text tab3 = new Text("\t ");
         HBox btn = new HBox();
         btn.setSpacing(8);
-        btn.getChildren().addAll(tab3, editInfo, updateInfo);
+        btn.getChildren().addAll(tab3, btnChangeProfilePic, editInfo, updateInfo);
         Separator horizSep = new Separator();
         horizSep.setOrientation(Orientation.HORIZONTAL);
         FlowPane topPane = new FlowPane();
@@ -867,6 +867,7 @@ public class Dashboard {
         Button btnExit = new Button("Exit");
         Button btnBrowse = new Button("Browse");
         Label lbBrowsePath = new Label("");
+        Label lbUpdatePicture = new Label("Please select your picture");
         ImageView imgProfile = new ImageView(image);
 
         //Allows you to select an Image File
@@ -905,13 +906,13 @@ public class Dashboard {
         gridpane.add(lbDob, 0, 6);
         gridpane.add(dpDob, 1, 6);
 */
-        vBox.getChildren().addAll(gridpane, lbBrowsePath, btnBrowse, imgProfile, btnUpdatePic, btnExit);
+        vBox.getChildren().addAll(gridpane, lbUpdatePicture, lbBrowsePath, btnBrowse, imgProfile, btnUpdatePic, btnExit);
 
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(10);
 
         //width, height of actual scene
-        Scene createAccountDashboard = new Scene(vBox, 300, 300);
+        Scene createAccountDashboard = new Scene(vBox, 300, 450);
         createAccountDashboard.getStylesheets().add(SocialGamerPro.class.getResource("Login.css").toExternalForm());
 
         createAccountStage.setScene(createAccountDashboard);
