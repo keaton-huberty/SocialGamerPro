@@ -328,12 +328,12 @@ public class Dashboard {
 
         //        creating dropdown for friend selection
         ComboBox friends1 = new ComboBox();
-        friends1.setPromptText("select Friend To Send Msg");
+        friends1.setPromptText("select user To Send Msg");
 
         //combo for select user to view msgs
         ComboBox selectFriendToViewMsg = new ComboBox();
         selectFriendToViewMsg.getItems().addAll("All");
-        selectFriendToViewMsg.setPromptText("select Friend To View Msg");
+        selectFriendToViewMsg.setPromptText("View Msg");
         selectFriendToViewMsg.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
             @Override
