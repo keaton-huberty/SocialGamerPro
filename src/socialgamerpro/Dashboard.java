@@ -126,23 +126,24 @@ public class Dashboard {
         Image tableExample = new Image("sampleTable.png");
         ImageView tableView = new ImageView(tableExample);
 
-        gamesTable.setEditable(true);
-
-        TableColumn titleColumn = new TableColumn("Title");
-        titleColumn.setMinWidth(250.0);
-        titleColumn.setCellValueFactory(
-                new PropertyValueFactory<>("gameTitle"));
-        TableColumn yearColumn = new TableColumn("Release Date");
-        yearColumn.setMinWidth(150.0);
-        yearColumn.setCellValueFactory(
-                new PropertyValueFactory<>("year"));
-        TableColumn genreColumn = new TableColumn("Genre");
-        genreColumn.setMinWidth(250.0);
-        genreColumn.setCellValueFactory(
-                new PropertyValueFactory<>("genre"));
-
-        gamesTable.setItems(db.getGamesPlayed(this.userID));
-        gamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn);
+//        gamesTable.setEditable(true);
+//
+//        TableColumn titleColumn = new TableColumn("Title");
+//        titleColumn.setMinWidth(250.0);
+//        titleColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("gameTitle"));
+//        TableColumn yearColumn = new TableColumn("Release Date");
+//        yearColumn.setMinWidth(150.0);
+//        yearColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("year"));
+//        TableColumn genreColumn = new TableColumn("Genre");
+//        genreColumn.setMinWidth(250.0);
+//        genreColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("genre"));
+//
+//        gamesTable.setItems(db.getGamesPlayed(this.userID));
+//        gamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn);
+        gamesTable = createGamesTable(this.userID);
 
         profilePicView.setPreserveRatio(true);
         VBox leftVbox = new VBox();
@@ -542,7 +543,7 @@ public class Dashboard {
                 //friendName = friendName.substring(1, friendName.length() - 1);
                 User userFriend = new User(db.getUserInfo(friendName));
                 userFriend.getDashboard().friendDashboard(userFriend.getName(), userFriend.getUserID());
-               // db.dbClose();
+                // db.dbClose();
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -830,26 +831,27 @@ public class Dashboard {
         Image tableExample = new Image("sampleTable.png");
         ImageView tableView = new ImageView(tableExample);
 
-        gamesTable.setEditable(true);
-
-        TableColumn titleColumn = new TableColumn("Title");
-        titleColumn.setMinWidth(250.0);
-        titleColumn.setCellValueFactory(
-                new PropertyValueFactory<>("gameTitle"));
-        TableColumn yearColumn = new TableColumn("Release Date");
-        yearColumn.setMinWidth(150.0);
-        yearColumn.setCellValueFactory(
-                new PropertyValueFactory<>("year"));
-        TableColumn genreColumn = new TableColumn("Genre");
-        genreColumn.setMinWidth(250.0);
-        genreColumn.setCellValueFactory(
-                new PropertyValueFactory<>("genre"));
+//        gamesTable.setEditable(true);
+//
+//        TableColumn titleColumn = new TableColumn("Title");
+//        titleColumn.setMinWidth(250.0);
+//        titleColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("gameTitle"));
+//        TableColumn yearColumn = new TableColumn("Release Date");
+//        yearColumn.setMinWidth(150.0);
+//        yearColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("year"));
+//        TableColumn genreColumn = new TableColumn("Genre");
+//        genreColumn.setMinWidth(250.0);
+//        genreColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("genre"));
+        gamesTable = createGamesTable(rootUserID);
 
         DBUtility db = new DBUtility();
 
         db.dbConnect();
-        gamesTable.setItems(db.getGamesPlayed(rootUserID));
-        gamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn);
+//        gamesTable.setItems(db.getGamesPlayed(rootUserID));
+//        gamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn);
 
         profilePicView.setPreserveRatio(true);
         VBox leftVbox = new VBox();
@@ -1042,6 +1044,44 @@ public class Dashboard {
             }
         });
 
+    }
+
+    public TableView createGamesTable(int userID) throws SQLException {
+        TableView newGamesTable = new TableView();
+
+        DBUtility db = new DBUtility();
+
+        newGamesTable.setEditable(true);
+
+        TableColumn titleColumn = new TableColumn("Title");
+        titleColumn.setMinWidth(200.0);
+        titleColumn.setCellValueFactory(
+                new PropertyValueFactory<>("gameTitle"));
+        TableColumn yearColumn = new TableColumn("Release Date");
+        yearColumn.setMinWidth(125.0);
+        yearColumn.setCellValueFactory(
+                new PropertyValueFactory<>("year"));
+        TableColumn genreColumn = new TableColumn("Genre");
+        genreColumn.setMinWidth(200.0);
+        genreColumn.setCellValueFactory(
+                new PropertyValueFactory<>("genre"));
+        TableColumn ratingColumn = new TableColumn("Rating");
+        ratingColumn.setMinWidth(100.0);
+        ratingColumn.setCellValueFactory(
+                new PropertyValueFactory<>("rating"));
+        TableColumn reviewColumn = new TableColumn("Review");
+        reviewColumn.setMinWidth(150.0);
+        reviewColumn.setCellValueFactory(
+                new PropertyValueFactory<>("review"));
+
+        db.dbConnect();
+
+        newGamesTable.setItems(db.getGamesPlayed(userID));
+        newGamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn, ratingColumn, reviewColumn);
+
+        db.dbClose();
+
+        return newGamesTable;
     }
 
 }
