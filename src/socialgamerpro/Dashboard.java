@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.event.ActionEvent;
@@ -21,6 +23,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -51,6 +54,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -59,14 +63,15 @@ import javafx.stage.Stage;
  */
 public class Dashboard {
 
+    public static boolean check = false;
     private String userName, fName, lName, bio;
     private int userID;
     private byte[] profilePicBlob;
     private TableView gamesTable = new TableView();
-    
+
     private Statement stmt;
     private ResultSet resultSet;
-    
+
     private Image image;
     private FileChooser fileChooser;
     private File file;
@@ -77,7 +82,7 @@ public class Dashboard {
         this.fName = fName;
         this.lName = lName;
         this.bio = bio;
-       // this.profilePicBlob = profilePic;
+        // this.profilePicBlob = profilePic;
     }
 
     ;
@@ -86,10 +91,10 @@ public class Dashboard {
 
         Stage dashboardStage = new Stage();
         //sets title at top of window
-        dashboardStage.setTitle("SocialGamer Pro");       
+        dashboardStage.setTitle("SocialGamer Pro");
         DBUtility db = new DBUtility();
-        db.dbConnect();    
-        Image blobPic = db.loadProfilePicture(this.userID);      
+        db.dbConnect();
+        Image blobPic = db.loadProfilePicture(this.userID);
         //set up left/top pane
         //set up profile picture        
         Image profilePic = new Image("userPic.png");
@@ -104,7 +109,7 @@ public class Dashboard {
         searchView.setFitWidth(20);
         //buttons
         Button btnViewFollower = new Button("View Profile");
-        Button btnViewFollowing = new Button();        
+        Button btnViewFollowing = new Button();
         btnViewFollowing.setGraphic(searchView);
         //vbox for holding name over current game
         VBox nameAndGame = new VBox();
@@ -121,24 +126,24 @@ public class Dashboard {
         Image tableExample = new Image("sampleTable.png");
         ImageView tableView = new ImageView(tableExample);
 
-        gamesTable.setEditable(true);
-
-        TableColumn titleColumn = new TableColumn("Title");
-        titleColumn.setMinWidth(250.0);
-        titleColumn.setCellValueFactory(
-                new PropertyValueFactory<>("gameTitle"));
-        TableColumn yearColumn = new TableColumn("Release Date");
-        yearColumn.setMinWidth(150.0);
-        yearColumn.setCellValueFactory(
-                new PropertyValueFactory<>("year"));
-        TableColumn genreColumn = new TableColumn("Genre");
-        genreColumn.setMinWidth(250.0);
-        genreColumn.setCellValueFactory(
-                new PropertyValueFactory<>("genre"));
-
-        
-        gamesTable.setItems(db.getGamesPlayed(this.userID));
-        gamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn);
+//        gamesTable.setEditable(true);
+//
+//        TableColumn titleColumn = new TableColumn("Title");
+//        titleColumn.setMinWidth(250.0);
+//        titleColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("gameTitle"));
+//        TableColumn yearColumn = new TableColumn("Release Date");
+//        yearColumn.setMinWidth(150.0);
+//        yearColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("year"));
+//        TableColumn genreColumn = new TableColumn("Genre");
+//        genreColumn.setMinWidth(250.0);
+//        genreColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("genre"));
+//
+//        gamesTable.setItems(db.getGamesPlayed(this.userID));
+//        gamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn);
+        gamesTable = createGamesTable(this.userID);
 
         profilePicView.setPreserveRatio(true);
         VBox leftVbox = new VBox();
@@ -169,8 +174,7 @@ public class Dashboard {
 
         });
 
-
-         //setting listner on update button
+        //setting listner on update button
         updateInfo.setOnAction((javafx.event.ActionEvent e) -> {
             name.setStyle("-fx-font: 18 arial; -fx-opacity: 1.0; -fx-control-inner-background: #DCDCDC;");
             userBio.setStyle("-fx-font: 18 arial; -fx-opacity: 1.0; -fx-control-inner-background: #DCDCDC;");
@@ -202,15 +206,14 @@ public class Dashboard {
                 addGameDashboard();
             }
         });
-        
+
         //Change Profile Pic Button
         Button btnChangeProfilePic = new Button(" Change Picture");
-        
+
         btnChangeProfilePic.setOnAction((javafx.event.ActionEvent e) -> {
 
             editProfilePicture();
         });
-        
 
         Text tab5 = new Text("\t   ");
         Text tab2 = new Text("\t   ");
@@ -235,7 +238,7 @@ public class Dashboard {
         leftVbox.setAlignment(Pos.TOP_LEFT);
         leftVbox.setSpacing(10);
 
-     //set up right pane for friends/messages
+        //set up right pane for friends/messages
         //button for messages, doesn't really function yet
         Button btnMessages = new Button("Messages");
         Text btnLabel2 = new Text("");
@@ -263,6 +266,18 @@ public class Dashboard {
         refreshButton.setVisible(false);
         //del button
         Button delButton = new Button("Delete All");
+        //creating Hbox for buttons paralel to each other
+        HBox buttons = new HBox();
+        buttons.getChildren().addAll(sendButton, refreshButton);
+
+        Button RecentMsgs = new Button("Recent Messages");
+        Button AllMsgs = new Button("All Messages");
+        RecentMsgs.setOnAction((javafx.event.ActionEvent e) -> {
+            check = true;
+        });
+        AllMsgs.setOnAction((javafx.event.ActionEvent e) -> {
+            check = false;
+        });
         //Exit Button
         Button btnExit = new Button("Exit");
         btnExit.setOnAction(new EventHandler<ActionEvent>() {
@@ -274,8 +289,8 @@ public class Dashboard {
             }
         });
         //creating Hbox for buttons paralel to each other
-        HBox buttons = new HBox();
-        buttons.getChildren().addAll(sendButton,delButton, btnExit);
+        HBox recentAllHbox = new HBox();
+        recentAllHbox.getChildren().addAll(RecentMsgs, AllMsgs);
         buttons.setSpacing(5);
         //making a text area
         TextArea textArea = TextAreaBuilder.create()
@@ -313,19 +328,48 @@ public class Dashboard {
 
         //        creating dropdown for friend selection
         ComboBox friends1 = new ComboBox();
-//        friends1.getItems().addAll(
-//                                    "Mike",
-//                                    "Amin",
-//                                    "Keaton"
-//                                );
-        //getting all users from database to fill the dropdown
-        //DBUtility dbobj=new DBUtility();
+        friends1.setPromptText("select Friend To Send Msg");
+
+        //combo for select user to view msgs
+        ComboBox selectFriendToViewMsg = new ComboBox();
+        selectFriendToViewMsg.getItems().addAll("All");
+        selectFriendToViewMsg.setPromptText("select Friend To View Msg");
+        selectFriendToViewMsg.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                try {
+                    //                throw new UnsupportedOperationException("Not supported yet.");
+
+                    String Sender = String.valueOf(selectFriendToViewMsg.getValue());
+                    //setting text in msg box for recieved msg
+                    ResultSet msgsForUser = dbobj.getMsgsforSpecificUser(userName, Sender, check);
+                    String setText = "";
+                    textArea.setText(setText);
+                    while (msgsForUser.next()) {
+                        //setting msgs into the text box
+                        String from = msgsForUser.getString("msgSender");
+                        String msgContent = msgsForUser.getString("msgContent");
+
+                        setText = setText + "From " + from + ":\n" + msgContent + "\n";
+                        textArea.setText(setText);
+
+                    }
+                    textArea.setScrollTop(Double.MAX_VALUE);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
         ResultSet users = dbobj.getUsers();
         while (users.next()) {
             friends1.getItems().addAll(
                     users.getString("userName")//adding users in drop down from database
             );
-
+            selectFriendToViewMsg.getItems().addAll(
+                    users.getString("userName")//adding users in drop down from database
+            );
         }
 
         //adding listener to send button
@@ -363,12 +407,37 @@ public class Dashboard {
         });
         //action listner of refresh button  
         refreshButton.setOnAction((javafx.event.ActionEvent e) -> {
+
+            boolean isMyComboBoxEmpty = selectFriendToViewMsg.getSelectionModel().isEmpty();
+            if (!isMyComboBoxEmpty) {
+                try {
+                    String Sender = String.valueOf(selectFriendToViewMsg.getValue());
+                    //setting text in msg box for recieved msg
+                    ResultSet msgsForUser = dbobj.getMsgsforSpecificUser(userName, Sender, check);
+                    String setText = "";
+                    textArea.setText(setText);
+                    while (msgsForUser.next()) {
+                        //setting msgs into the text box
+                        String from = msgsForUser.getString("msgSender");
+                        String msgContent = msgsForUser.getString("msgContent");
+
+                        setText = setText + "From " + from + ":\n" + msgContent + "\n";
+                        textArea.setText(setText);
+
+                    }
+                    textArea.setScrollTop(Double.MAX_VALUE);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return;
+
+            }
             //setting text in msg box for recieved msg
             ResultSet msgs = null;
             ResultSet msgs1 = null;
             try {
-                msgs = dbobj.getMsg(userName);
-                msgs1 = dbobj.getMsg(userName);//second Resultset for checking if theres no msg
+                msgs = dbobj.getMsg(userName, check);
+                msgs1 = dbobj.getMsg(userName, check);//second Resultset for checking if theres no msg
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -377,6 +446,7 @@ public class Dashboard {
             try {
                 if (msgs1.next() == false) {
                     textArea.setText("");
+                    textArea.setScrollTop(Double.MAX_VALUE);
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
@@ -393,6 +463,7 @@ public class Dashboard {
                     textArea.setText(setText);
 
                 }
+                textArea.setScrollTop(Double.MAX_VALUE);
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -414,7 +485,7 @@ public class Dashboard {
         });
 
         //setting text in msg box for recieved msg
-        ResultSet msgs = dbobj.getMsg(userName);
+        ResultSet msgs = dbobj.getMsg(userName, check);
         String setText = "";
 
         while (msgs.next()) {
@@ -426,6 +497,7 @@ public class Dashboard {
             textArea.setText(setText);
 
         }
+        textArea.setScrollTop(Double.MAX_VALUE);
         //set up search bar for finding users
         ComboBox search = new ComboBox();
         search.setEditable(true);
@@ -447,9 +519,10 @@ public class Dashboard {
 
                 String friendName = friendsList.getSelectionModel().getSelectedItems().toString();
                 friendName = friendName.substring(1, friendName.length() - 1);
-                User user = new User(db.getUserInfo(friendName));
-                user.getDashboard().friendDashboard(this.userName, this.userID);
-                db.dbClose();
+                User userFriend = new User(db.getUserInfo(friendName));
+                System.out.println("USERFRIEND USERNAME CHECK: " + userFriend.getName() + " - USERID CHECK: " + userFriend.getUserID());
+                userFriend.getDashboard().friendDashboard(userFriend.getName(), userFriend.getUserID());
+                //  db.dbClose();
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -468,9 +541,9 @@ public class Dashboard {
                 System.out.println("friendName = " + friendName);
                 //String friendName = friendsList.getSelectionModel().getSelectedItems().toString();
                 //friendName = friendName.substring(1, friendName.length() - 1);
-                User user = new User(db.getUserInfo(friendName));
-                user.getDashboard().friendDashboard(this.userName, this.userID);
-                db.dbClose();
+                User userFriend = new User(db.getUserInfo(friendName));
+                userFriend.getDashboard().friendDashboard(userFriend.getName(), userFriend.getUserID());
+                // db.dbClose();
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -524,23 +597,22 @@ public class Dashboard {
         dashboardStage.show();
         //set background color to a light grey
         bPane.setStyle("-fx-background-color: #8DAABA;");
-         Thread thread = new Thread(){
-                                    @Override
-				    public void run(){
-				    	
-				    	try {
-					         for(int i = 1; ; i++) {
-                                                    refreshButton.fire();//calling refresh button to auto refresh msgs after sending
-					            Thread.sleep(1000);
-					         }
-					      }catch (InterruptedException e) {
-					         System.out.println("Thread  interrupted.");
-					      }
-				    }
-				    
-				  };
-				  thread.start();
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
 
+                try {
+                    for (int i = 1;; i++) {
+                        refreshButton.fire();//calling refresh button to auto refresh msgs after sending
+                        Thread.sleep(1000);
+                    }
+                } catch (InterruptedException e) {
+                    System.out.println("Thread  interrupted.");
+                }
+            }
+
+        };
+        thread.start();
 
     }
 
@@ -759,26 +831,27 @@ public class Dashboard {
         Image tableExample = new Image("sampleTable.png");
         ImageView tableView = new ImageView(tableExample);
 
-        gamesTable.setEditable(true);
-
-        TableColumn titleColumn = new TableColumn("Title");
-        titleColumn.setMinWidth(250.0);
-        titleColumn.setCellValueFactory(
-                new PropertyValueFactory<>("gameTitle"));
-        TableColumn yearColumn = new TableColumn("Release Date");
-        yearColumn.setMinWidth(150.0);
-        yearColumn.setCellValueFactory(
-                new PropertyValueFactory<>("year"));
-        TableColumn genreColumn = new TableColumn("Genre");
-        genreColumn.setMinWidth(250.0);
-        genreColumn.setCellValueFactory(
-                new PropertyValueFactory<>("genre"));
+//        gamesTable.setEditable(true);
+//
+//        TableColumn titleColumn = new TableColumn("Title");
+//        titleColumn.setMinWidth(250.0);
+//        titleColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("gameTitle"));
+//        TableColumn yearColumn = new TableColumn("Release Date");
+//        yearColumn.setMinWidth(150.0);
+//        yearColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("year"));
+//        TableColumn genreColumn = new TableColumn("Genre");
+//        genreColumn.setMinWidth(250.0);
+//        genreColumn.setCellValueFactory(
+//                new PropertyValueFactory<>("genre"));
+        gamesTable = createGamesTable(rootUserID);
 
         DBUtility db = new DBUtility();
 
         db.dbConnect();
-        gamesTable.setItems(db.getGamesPlayed(rootUserID));
-        gamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn);
+//        gamesTable.setItems(db.getGamesPlayed(rootUserID));
+//        gamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn);
 
         profilePicView.setPreserveRatio(true);
         VBox leftVbox = new VBox();
@@ -883,7 +956,7 @@ public class Dashboard {
         VBox vBox = new VBox();
 
         GridPane gridpane = new GridPane();
-/*
+        /*
         StackPane logoStackpane = new StackPane();
         imgViewLogo.setImage(imgLogo);
         imgViewLogo.setFitHeight(150);
@@ -927,25 +1000,25 @@ public class Dashboard {
                 alert.setContentText("Please select a picture.");
                 alert.showAndWait();
             } else {
-                     System.out.println("Update Picture Successful!");
-                    DBUtility dbNewAccount = new DBUtility();
+                System.out.println("Update Picture Successful!");
+                DBUtility dbNewAccount = new DBUtility();
 
-                    try {
-                        dbNewAccount.dbConnect();
-                    } catch (SQLException ex) {
-                        Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                try {
+                    dbNewAccount.dbConnect();
+                } catch (SQLException ex) {
+                    Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-                    try {
-                        dbNewAccount.updateProfilePicture (userName, file);
-                    } catch (SQLException | IOException ex) {
-                        Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    try {
-                        dbNewAccount.dbClose();
-                    } catch (SQLException ex) {
-                        Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                try {
+                    dbNewAccount.updateProfilePicture(userName, file);
+                } catch (SQLException | IOException ex) {
+                    Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                try {
+                    dbNewAccount.dbClose();
+                } catch (SQLException ex) {
+                    Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 
@@ -972,6 +1045,44 @@ public class Dashboard {
             }
         });
 
+    }
+
+    public TableView createGamesTable(int userID) throws SQLException {
+        TableView newGamesTable = new TableView();
+
+        DBUtility db = new DBUtility();
+
+        newGamesTable.setEditable(true);
+
+        TableColumn titleColumn = new TableColumn("Title");
+        titleColumn.setMinWidth(200.0);
+        titleColumn.setCellValueFactory(
+                new PropertyValueFactory<>("gameTitle"));
+        TableColumn yearColumn = new TableColumn("Release Date");
+        yearColumn.setMinWidth(125.0);
+        yearColumn.setCellValueFactory(
+                new PropertyValueFactory<>("year"));
+        TableColumn genreColumn = new TableColumn("Genre");
+        genreColumn.setMinWidth(200.0);
+        genreColumn.setCellValueFactory(
+                new PropertyValueFactory<>("genre"));
+        TableColumn ratingColumn = new TableColumn("Rating");
+        ratingColumn.setMinWidth(100.0);
+        ratingColumn.setCellValueFactory(
+                new PropertyValueFactory<>("rating"));
+        TableColumn reviewColumn = new TableColumn("Review");
+        reviewColumn.setMinWidth(150.0);
+        reviewColumn.setCellValueFactory(
+                new PropertyValueFactory<>("review"));
+
+        db.dbConnect();
+
+        newGamesTable.setItems(db.getGamesPlayed(userID));
+        newGamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn, ratingColumn, reviewColumn);
+
+        db.dbClose();
+
+        return newGamesTable;
     }
 
 }

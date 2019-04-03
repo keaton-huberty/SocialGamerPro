@@ -23,6 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -39,6 +40,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 /**
  * Keaton, Will, Mike, and Amin 1/21/2019
@@ -145,8 +147,11 @@ public class SocialGamerPro extends Application {
         primaryStage.setTitle("Social Gaming Pro!");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
+       Rectangle2D primScreenBounds1 = Screen.getPrimary().getVisualBounds();
+        primaryStage.setX((primScreenBounds1.getWidth() - primaryStage.getWidth()) / 2);
+        primaryStage.setY((primScreenBounds1.getHeight() - primaryStage.getHeight()) / 2);
+        
         primaryStage.show();
-        primaryStage.centerOnScreen();
 
     }
 
@@ -225,6 +230,10 @@ public class SocialGamerPro extends Application {
 //        createAccountStage.setMinHeight(650);
 //        createAccountStage.setMinWidth(1100);
         //primaryStage.close();
+		createAccountStage.show();
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        createAccountStage.setX((primScreenBounds.getWidth() - createAccountStage.getWidth()) / 2);
+        createAccountStage.setY((primScreenBounds.getHeight() - createAccountStage.getHeight()) / 2);
         createAccountStage.show();
         //set background color to a light grey
 //        vBox.setStyle("-fx-background-color: #DCDCDC;");

@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javafx.scene.image.Image;
 
-
 /**
  *
  * @author Will
@@ -26,9 +25,22 @@ public class User {
     private Dashboard dashboard;
     private Dashboard friendDashboard;
     //private ResultSet userInfo = null;
-    
-    
-        /**
+
+    /**
+     * @return the userID
+     */
+    public int getUserID() {
+        return userID;
+    }
+
+    /**
+     * @param userID the userID to set
+     */
+    public void setUserID(int userID) {
+        this.userID = userID;
+    }
+
+    /**
      * @return the friendDashboard
      */
     public Dashboard getFriendDashboard() {
@@ -41,7 +53,6 @@ public class User {
     public void setFriendDashboard(Dashboard friendDashboard) {
         this.friendDashboard = friendDashboard;
     }
-
 
     /**
      * @return the dashboard
@@ -92,8 +103,8 @@ public class User {
             this.fName = userInfo.getString("firstName");
             this.lName = userInfo.getString("lastName");
             this.bio = userInfo.getString("Bio");
-        }       
-        this.dashboard = new Dashboard(userID, userName,fName, lName, bio);
+        }
+        this.dashboard = new Dashboard(getUserID(), userName, fName, lName, bio);
     }
 
 }
