@@ -257,8 +257,8 @@ public class Dashboard {
         Text flLabel = new Text("Following");
         flLabel.setStyle("-fx-font: 24 arial;");
 
-        Text label = new Text("Messages");
-        label.setStyle("-fx-font: 24 arial;");
+       Text lable = new Text("Received Msgs");
+        Text selectuserLable = new Text("Select user to send Msg");
         //send button
         Button sendButton = new Button("Send");
         //refresh button
@@ -294,7 +294,7 @@ public class Dashboard {
         buttons.setSpacing(5);
         //making a text area
         TextArea textArea = TextAreaBuilder.create()
-                .prefWidth(100)
+                .prefWidth(80)
                 .wrapText(true)
                 .build();
         //chatbox code here
@@ -554,13 +554,8 @@ public class Dashboard {
         searchBox.setSpacing(20);
         //set search bar default value
         search.setPromptText("Username");
-        HBox followerBox = new HBox(flLabel, btnViewFollower);
-        followerBox.setSpacing(20);
-        friends1.setValue("Select a friend");
-        HBox messageHbox = new HBox(label, friends1);
-        messageHbox.setSpacing(20);
-        rightVbox.getChildren().addAll(searchBox, followerBox, friendsList, messageHbox, scrollPane, msgType, buttons);
-        rightVbox.setPrefWidth(100);
+        rightVbox.getChildren().addAll(searchBox, flLabel, friendsList, btnViewFollower,selectFriendToViewMsg, textArea,recentAllHbox,friends1,msgType, buttons);
+
         //set up bottom pane
         Text bottomText = new Text("Created by Keaton, Will, Mike, and Amin (2019)");
 
