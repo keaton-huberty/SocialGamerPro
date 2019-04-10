@@ -109,8 +109,8 @@ public class Dashboard {
         searchView.setFitWidth(20);
         //buttons
         Button btnViewFollower = new Button("View Profile");
-        Button btnViewFollowing = new Button();
-        btnViewFollowing.setGraphic(searchView);
+        Button btnViewFollowing = new Button("Go");
+        //btnViewFollowing.setGraphic(searchView);
         //vbox for holding name over current game
         VBox nameAndGame = new VBox();
         TextField name = new TextField(fName + " " + lName);
@@ -258,7 +258,7 @@ public class Dashboard {
         flLabel.setStyle("-fx-font: 24 arial;");
 
        Text lable = new Text("Received Msgs");
-        Text selectuserLable = new Text("Select user to send Msg");
+        Text selectuserLable = new Text("Select User to Message");
         //send button
         Button sendButton = new Button("Send");
         //refresh button
@@ -270,7 +270,7 @@ public class Dashboard {
         HBox buttons = new HBox();
         buttons.getChildren().addAll(sendButton, refreshButton);
 
-        Button RecentMsgs = new Button("Recent Messages");
+        Button RecentMsgs = new Button("Recent");
         Button AllMsgs = new Button("All Messages");
         RecentMsgs.setOnAction((javafx.event.ActionEvent e) -> {
             check = true;
@@ -291,6 +291,7 @@ public class Dashboard {
         //creating Hbox for buttons paralel to each other
         HBox recentAllHbox = new HBox();
         recentAllHbox.getChildren().addAll(RecentMsgs, AllMsgs);
+        recentAllHbox.setSpacing(10);
         buttons.setSpacing(5);
         //making a text area
         TextArea textArea = TextAreaBuilder.create()
@@ -328,12 +329,12 @@ public class Dashboard {
 
         //        creating dropdown for friend selection
         ComboBox friends1 = new ComboBox();
-        friends1.setPromptText("select user To Send Msg");
+        friends1.setPromptText("Select User to Message");
 
         //combo for select user to view msgs
         ComboBox selectFriendToViewMsg = new ComboBox();
         selectFriendToViewMsg.getItems().addAll("All");
-        selectFriendToViewMsg.setPromptText("View Msg");
+        selectFriendToViewMsg.setPromptText("View Messages From");
         selectFriendToViewMsg.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
             @Override
@@ -554,7 +555,9 @@ public class Dashboard {
         searchBox.setSpacing(20);
         //set search bar default value
         search.setPromptText("Username");
-        rightVbox.getChildren().addAll(searchBox, flLabel, friendsList, btnViewFollower,selectFriendToViewMsg, textArea,recentAllHbox,friends1,msgType, buttons);
+        HBox followingHbox = new HBox(flLabel, btnViewFollower);
+        followingHbox.setSpacing(20);
+        rightVbox.getChildren().addAll(searchBox, followingHbox, friendsList,selectFriendToViewMsg, textArea,recentAllHbox,friends1,msgType, buttons);
 
         //set up bottom pane
         Text bottomText = new Text("Created by Keaton, Will, Mike, and Amin (2019)");
@@ -812,9 +815,7 @@ public class Dashboard {
         VBox nameAndGame = new VBox();
         Text name = new Text(fName + " " + lName);
         name.setStyle("-fx-font: 24 arial;");
-        Text currentGame = new Text("Now Playing: Call of Duty: Modern Warfare 2");
-        currentGame.setStyle("fx-font: 16 arial;");
-        nameAndGame.getChildren().addAll(name, currentGame, btnFollow);
+        nameAndGame.getChildren().addAll(name, btnFollow);
         //flow pane for holding picture, name/game, and messages button
         FlowPane topPane = new FlowPane();
         Text tab = new Text("\t   ");
@@ -822,9 +823,6 @@ public class Dashboard {
         topPane.getChildren().addAll(tab, profilePicView, nameAndGame);
         topPane.setHgap(10);
         nameAndGame.setAlignment(Pos.CENTER_LEFT);
-
-        Image tableExample = new Image("sampleTable.png");
-        ImageView tableView = new ImageView(tableExample);
 
 //        gamesTable.setEditable(true);
 //
@@ -850,7 +848,7 @@ public class Dashboard {
 
         profilePicView.setPreserveRatio(true);
         VBox leftVbox = new VBox();
-        Text bioLabel = new Text("\tUser Biography");
+        Text bioLabel = new Text("\tUser Biography:");
         bioLabel.setStyle("-fx-font: 24 arial;");
         Text userBio = new Text(bio);
         userBio.setStyle("-fx-font: 18 arial;");
@@ -925,7 +923,7 @@ public class Dashboard {
         //primaryStage.close();
         dashboardStage.show();
         //set background color to a light grey
-        bPane.setStyle("-fx-background-color: #DCDCDC;");
+        bPane.setStyle("-fx-background-color: #8DAABA;");
 
     }
 
