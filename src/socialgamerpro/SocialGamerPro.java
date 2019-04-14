@@ -57,7 +57,7 @@ public class SocialGamerPro extends Application {
     private final ImageView imgViewLogo = new ImageView();
     private final Image imgLogo = new Image("background.png");
     private final Label wrongLogin = new Label("");
-    //private final Label forgotPassword = new Label("");
+    private final Button btnForgotPassword = new Button("Forgot Password");
 
     private FileChooser fileChooser;
     private File file;
@@ -92,7 +92,7 @@ public class SocialGamerPro extends Application {
 //        tfPassword.setMaxWidth(200);
         //VBox vBoxDashboard = new VBox();
         // adding the labesl, textfields and button to the vertical box
-        vBox.getChildren().addAll(logoStackpane, tfUsername, lbUsername, tfPassword, lbPassword, btnLogin, btnCreateAccount, wrongLogin);
+        vBox.getChildren().addAll(logoStackpane, tfUsername, lbUsername, tfPassword, lbPassword, btnLogin, btnCreateAccount, btnForgotPassword, wrongLogin);
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(5);
         //vBox.set
