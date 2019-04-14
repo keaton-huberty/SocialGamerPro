@@ -144,6 +144,11 @@ public class SocialGamerPro extends Application {
             createAccountWindow();
         });
 
+        btnForgotPassword.setOnAction((javafx.event.ActionEvent e) -> {
+            
+            forgotPasswordWindow();
+        });
+        
         primaryStage.setTitle("Social Gaming Pro!");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
@@ -292,7 +297,7 @@ public class SocialGamerPro extends Application {
                 }
             }
         });
-
+        
 //closes the create account page and returns to login page
         btnExit.setOnAction((javafx.event.ActionEvent e) -> {
             createAccountStage.close();
@@ -317,7 +322,128 @@ public class SocialGamerPro extends Application {
         });
 
     }
+    
+    public void forgotPasswordWindow(){
 
+        TextField tfUsernameNew = new TextField();
+        //TextField tfFirstName = new TextField();
+        //TextField tfLastName = new TextField();
+        TextField tfEmail = new TextField();
+        //TextField tfDob = new TextField();
+        //DatePicker dpDob = new DatePicker();
+        //TextArea tfBio = new TextArea();
+        PasswordField tfPassword3 = new PasswordField();
+        PasswordField tfPassword4 = new PasswordField();
+        Label lbUsernameNew = new Label("Username");
+        Label lbPassword3 = new Label("Password");
+        Label lbPassword4 = new Label("Confirm Password");
+        //Label lbFirstName = new Label("First Name");
+        //Label lbLastName = new Label("Last Name");
+        Label lbEmail = new Label("Email");
+        //Label lbDob = new Label("Enter Birthday (ex 1990-01-31)");
+        //Label lbBio = new Label("Bio");
+        Button btnSendEmail = new Button("Send Email");
+        Button btnExit = new Button("Exit");
+        //Button btnBrowse = new Button("Browse");
+        //Label lbBrowsePath = new Label("");
+        //ImageView imgProfile = new ImageView(image);
+
+        Stage forgotPasswordStage = new Stage();
+        //sets title at top of window
+        forgotPasswordStage.setTitle("Forgot Password?");
+
+        VBox vBox = new VBox();
+
+        GridPane gridpane = new GridPane();
+        // gridpane.getColumnConstraints().add(new ColumnConstraints(50));
+
+        StackPane logoStackpane = new StackPane();
+        imgViewLogo.setImage(imgLogo);
+        imgViewLogo.setFitHeight(150);
+        imgViewLogo.setPreserveRatio(true);
+        logoStackpane.getChildren().add(imgViewLogo);
+        logoStackpane.setPadding(new Insets(25));
+        //imgViewLogo.set
+        gridpane.add(lbUsernameNew, 0, 0);
+        gridpane.add(tfUsernameNew, 1, 0);
+        gridpane.add(lbEmail, 0, 1);
+        gridpane.add(tfEmail, 1, 1);
+        gridpane.add(lbPassword3, 0, 2);
+        gridpane.add(tfPassword3, 1, 2);
+        gridpane.add(lbPassword4, 0, 3);
+        gridpane.add(tfPassword4, 1, 3);
+        vBox.getChildren().addAll(gridpane, btnSendEmail, btnExit);
+
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(10);
+
+        //width, height of actual scene
+        Scene forgotPasswordDashboard = new Scene(vBox, 450, 650);
+        forgotPasswordDashboard.getStylesheets().add(SocialGamerPro.class.getResource("Login.css").toExternalForm());
+
+        forgotPasswordStage.setScene(forgotPasswordDashboard);
+//        createAccountStage.setMinHeight(650);
+//        createAccountStage.setMinWidth(1100);
+        //primaryStage.close();
+		forgotPasswordStage.show();
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        forgotPasswordStage.setX((primScreenBounds.getWidth() - forgotPasswordStage.getWidth()) / 2);
+        forgotPasswordStage.setY((primScreenBounds.getHeight() - forgotPasswordStage.getHeight()) / 2);
+        forgotPasswordStage.show();
+        //set background color to a light grey
+//        vBox.setStyle("-fx-background-color: #DCDCDC;");
+
+        btnSendEmail.setOnAction((javafx.event.ActionEvent e) -> {
+            
+//validates password using regex to require a number, a lowercase letter, an uppercase letter, a special character (!@#$%^&+=), and has to be 8 characters or more).
+            Pattern p = Pattern.compile("((?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&+=]).{8,})");
+            Matcher m = p.matcher(tfPassword3.getText());
+
+//confirming that both password fields match            
+            String pwd = tfPassword3.getText();
+            String confpwd = tfPassword4.getText();
+
+            if (tfUsernameNew.getText().isEmpty()
+                    | tfEmail.getText().isEmpty()
+                    | !m.matches()) {
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle("Error in Validating Fields");
+                alert.setHeaderText(null);
+                alert.setContentText("Make Sure Fields are not blank");
+                alert.showAndWait();
+            } else {
+            //verifying that the password matches in order to update password
+                if (pwd.equals(confpwd)) {
+
+                    System.out.println("Updating complete");
+                    DBUtility dbSendEmail = new DBUtility();
+
+                    try {
+                        dbSendEmail.dbConnect();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    try {
+                        dbSendEmail.updateEmail(tfUsernameNew.getText(), tfPassword3.getText(), tfEmail.getText());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    try {
+                        dbSendEmail.dbClose();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } 
+            }
+        });
+        //closes the create account page and returns to login page
+        btnExit.setOnAction((javafx.event.ActionEvent e) -> {
+            forgotPasswordStage.close();
+
+        });
+    }
+    
     public void loginError() {
 
         VBox errorVbox = new VBox();

@@ -284,7 +284,7 @@ public class DBUtility {
 
     }
 
-        public void updateProfilePicture (String userName, File image) throws SQLException, FileNotFoundException, IOException {
+    public void updateProfilePicture (String userName, File image) throws SQLException, FileNotFoundException, IOException {
 
         stmt = conn.createStatement();
         // this runs the SQL query - notice the extra single quotes around the string.  Don't forget those.
@@ -297,6 +297,16 @@ public class DBUtility {
         ps.setString(2, userName);
         ps.execute();
         ps.close();
+
+    }
+        
+    public void updateEmail(String user, String email, String password) throws SQLException {
+
+        dbConnect();
+        //first have to creat a statement
+        stmt = conn.createStatement();
+        // this runs the SQL query - notice the extra single quotes around the string.  Don't forget those.
+        stmt.executeUpdate("UPDATE userLogin SET Email='" + email + "',userPassword='" + password + "' WHERE userName = '" + user + "'");
 
     }
 
