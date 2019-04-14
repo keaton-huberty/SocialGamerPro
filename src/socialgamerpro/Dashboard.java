@@ -42,6 +42,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -147,28 +148,49 @@ public class Dashboard {
 
         profilePicView.setPreserveRatio(true);
         VBox leftVbox = new VBox();
-        Text bioLabel = new Text(" User Biography: ");
-        bioLabel.setStyle("-fx-font: 24 arial;");
+//        Text bioLabel = new Text(" User Biography: ");
+//        bioLabel.setStyle("-fx-font: 24 arial;");
+        final Tooltip tooltip = new Tooltip();
+        tooltip.setText("User Biography");
 
-        TextField userBio = new TextField(bio);
+        TextArea userBio = new TextArea(bio);
         userBio.setDisable(true);
+        userBio.setPrefHeight(120);
+        userBio.setPrefWidth(400);
+        userBio.setTooltip(tooltip);
+        userBio.setWrapText(true);
+        
 
-        userBio.setStyle("-fx-font: 18 arial; -fx-opacity: 1.0; -fx-control-inner-background: #DCDCDC;");
+        userBio.setStyle("-fx-font: 18 arial; -fx-opacity: 1.0; -fx-control-inner-background: #DCDCDC; -fx-text-alignment: center ;");
         Text cLabel = new Text("\tGames I Play: ");
         cLabel.setStyle("-fx-font: 24 arial;");
         Button btnAddGameUser = new Button("+ to List");
         Button btnAddGameLibrary = new Button("+ to Library");
 
         Button editInfo = new Button("Edit Info");
+        
         Button updateInfo = new Button("Update Info");
         updateInfo.setVisible(false);
 
+        //Change Profile Pic Button
+        Button btnChangeProfilePic = new Button("Change Picture");
+        btnChangeProfilePic.setVisible(false);
+
+        btnChangeProfilePic.setOnAction((javafx.event.ActionEvent e) -> {
+
+            editProfilePicture();
+        });
+        
         //setting listner on edit info
         editInfo.setOnAction((javafx.event.ActionEvent e) -> {
             name.setDisable(false);
             userBio.setDisable(false);
+            
+            btnChangeProfilePic.setVisible(true);
             updateInfo.setVisible(true);
             editInfo.setVisible(false);
+            
+            
             userBio.setStyle("-fx-font: 18 arial; -fx-opacity: 1.0; -fx-control-inner-background: #FFF; ");
             name.setStyle("-fx-font: 18 arial; -fx-opacity: 1.0; -fx-control-inner-background: #FFF;");
 
@@ -182,6 +204,8 @@ public class Dashboard {
             userBio.setDisable(true);
             updateInfo.setVisible(false);
             editInfo.setVisible(true);
+            btnChangeProfilePic.setVisible(false);
+            
 
             String name1 = name.getText();
             String bio = userBio.getText();
@@ -207,13 +231,7 @@ public class Dashboard {
             }
         });
 
-        //Change Profile Pic Button
-        Button btnChangeProfilePic = new Button(" Change Picture");
-
-        btnChangeProfilePic.setOnAction((javafx.event.ActionEvent e) -> {
-
-            editProfilePicture();
-        });
+        
 
         Text tab5 = new Text("\t   ");
         Text tab2 = new Text("\t   ");
@@ -222,11 +240,11 @@ public class Dashboard {
         Text tab3 = new Text("\t ");
         HBox btn = new HBox();
         btn.setSpacing(8);
-        btn.getChildren().addAll(tab3, btnChangeProfilePic, editInfo, updateInfo);
+        btn.getChildren().addAll(tab3, editInfo, updateInfo,btnChangeProfilePic);
         Separator horizSep = new Separator();
         horizSep.setOrientation(Orientation.HORIZONTAL);
         FlowPane topPane = new FlowPane();
-        HBox bioBox = new HBox(bioLabel, userBio);
+        HBox bioBox = new HBox( userBio);
         VBox nameAndBio = new VBox(tab, name, bioBox);
         nameAndBio.setSpacing(15);
         //add to top pane
