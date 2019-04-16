@@ -960,9 +960,9 @@ public class Dashboard {
                 new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.gif")
         );
 
-        Stage createAccountStage = new Stage();
+        Stage editProfilePictureStage = new Stage();
         //sets title at top of window
-        createAccountStage.setTitle("Update Profile Picture");
+        editProfilePictureStage.setTitle("Update Profile Picture");
 
         VBox vBox = new VBox();
 
@@ -996,12 +996,12 @@ public class Dashboard {
         vBox.setSpacing(10);
 
         //width, height of actual scene
-        Scene createAccountDashboard = new Scene(vBox, 300, 450);
-        createAccountDashboard.getStylesheets().add(SocialGamerPro.class.getResource("Login.css").toExternalForm());
+        Scene editProfilePictureDashboard = new Scene(vBox, 300, 450);
+        editProfilePictureDashboard.getStylesheets().add(SocialGamerPro.class.getResource("Login.css").toExternalForm());
 
-        createAccountStage.setScene(createAccountDashboard);
+        editProfilePictureStage.setScene(editProfilePictureDashboard);
 
-        createAccountStage.show();
+        editProfilePictureStage.show();
 
         btnUpdatePic.setOnAction((javafx.event.ActionEvent e) -> {
             if (lbBrowsePath.getText().isEmpty()) {
@@ -1035,12 +1035,12 @@ public class Dashboard {
 
 //closes the create account page and returns to login page
         btnExit.setOnAction((javafx.event.ActionEvent e) -> {
-            createAccountStage.close();
+            editProfilePictureStage.close();
 
         });
 
         btnBrowse.setOnAction((javafx.event.ActionEvent e) -> {
-            file = fileChooser.showOpenDialog(createAccountStage);
+            file = fileChooser.showOpenDialog(editProfilePictureStage);
             if (file != null) {
                 //desktop.open(file);
                 lbBrowsePath.setText(file.getAbsolutePath());
