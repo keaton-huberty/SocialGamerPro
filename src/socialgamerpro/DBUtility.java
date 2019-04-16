@@ -300,13 +300,36 @@ public class DBUtility {
 
     }
         
-    public void updateEmail(String user, String email, String password) throws SQLException {
+    public void updateEmail(String user, String password) throws SQLException {
 
         dbConnect();
         //first have to creat a statement
         stmt = conn.createStatement();
         // this runs the SQL query - notice the extra single quotes around the string.  Don't forget those.
-        stmt.executeUpdate("UPDATE userLogin SET Email='" + email + "',userPassword='" + password + "' WHERE userName = '" + user + "'");
+        stmt.executeUpdate("UPDATE userLogin SET userPassword='" + password + "' WHERE userName = '" + user + "'");
+
+    }
+    
+    public boolean checkEmail(String inputUserName, String inputEmail) throws SQLException {
+        String username = null;
+        String email = null;
+
+        //first have to creat a statement
+        stmt = conn.createStatement();
+        // this runs the SQL query - notice the extra single quotes around the string.  Don't forget those.
+        resultSet = stmt.executeQuery("SELECT * FROM userLogin WHERE userName = '" + inputUserName + "'");
+
+        //In order to read what the query returns, we have to use resultSet.next(), otherwise we get an error
+        //Here I am assigning the correct password with the username
+        if (resultSet.next()) {
+            username = resultSet.getString("userName");
+            email = resultSet.getString("Email");
+        } else {
+            System.out.println("Username/Email does not exist!");
+        }
+
+        //checking to see if the user entered password equals the password stored in the database
+        return inputEmail.equals(email);
 
     }
 

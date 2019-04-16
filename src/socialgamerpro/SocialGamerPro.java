@@ -332,20 +332,20 @@ public class SocialGamerPro extends Application {
         //TextField tfDob = new TextField();
         //DatePicker dpDob = new DatePicker();
         //TextArea tfBio = new TextArea();
-        PasswordField tfPassword3 = new PasswordField();
-        PasswordField tfPassword4 = new PasswordField();
-        Label lbUsernameNew = new Label("Username");
-        Label lbPassword3 = new Label("Password");
-        Label lbPassword4 = new Label("Confirm Password");
+        //PasswordField tfPassword3 = new PasswordField();
+        //PasswordField tfPassword4 = new PasswordField();
+        Label lbUsernameNew = new Label("What is your username?  ");
+        //Label lbPassword3 = new Label("Password");
+        //Label lbPassword4 = new Label("Confirm Password");
         //Label lbFirstName = new Label("First Name");
         //Label lbLastName = new Label("Last Name");
-        Label lbEmail = new Label("Email");
+        Label lbEmail = new Label("What is your email?   ");
         //Label lbDob = new Label("Enter Birthday (ex 1990-01-31)");
         //Label lbBio = new Label("Bio");
-        Button btnSendEmail = new Button("Send Email");
+        Button btnSubmit = new Button("Submit");
         Button btnExit = new Button("Exit");
         //Button btnBrowse = new Button("Browse");
-        //Label lbBrowsePath = new Label("");
+        Label lbWrongUsernamePwd = new Label("");
         //ImageView imgProfile = new ImageView(image);
 
         Stage forgotPasswordStage = new Stage();
@@ -368,17 +368,17 @@ public class SocialGamerPro extends Application {
         gridpane.add(tfUsernameNew, 1, 0);
         gridpane.add(lbEmail, 0, 1);
         gridpane.add(tfEmail, 1, 1);
-        gridpane.add(lbPassword3, 0, 2);
-        gridpane.add(tfPassword3, 1, 2);
-        gridpane.add(lbPassword4, 0, 3);
-        gridpane.add(tfPassword4, 1, 3);
-        vBox.getChildren().addAll(gridpane, btnSendEmail, btnExit);
+        //gridpane.add(lbPassword3, 0, 2);
+        //gridpane.add(tfPassword3, 1, 2);
+        //gridpane.add(lbPassword4, 0, 3);
+        //gridpane.add(tfPassword4, 1, 3);
+        vBox.getChildren().addAll(gridpane, btnSubmit, btnExit, lbWrongUsernamePwd);
 
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(10);
 
         //width, height of actual scene
-        Scene forgotPasswordDashboard = new Scene(vBox, 450, 650);
+        Scene forgotPasswordDashboard = new Scene(vBox, 400, 450);
         forgotPasswordDashboard.getStylesheets().add(SocialGamerPro.class.getResource("Login.css").toExternalForm());
 
         forgotPasswordStage.setScene(forgotPasswordDashboard);
@@ -393,7 +393,110 @@ public class SocialGamerPro extends Application {
         //set background color to a light grey
 //        vBox.setStyle("-fx-background-color: #DCDCDC;");
 
-        btnSendEmail.setOnAction((javafx.event.ActionEvent e) -> {
+        btnSubmit.setOnAction((javafx.event.ActionEvent e) -> {
+            DBUtility db = new DBUtility();
+            // connecting to the database
+            try {
+                db.dbConnect();
+            } catch (SQLException ex) {
+                Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            try {
+                if (db.checkEmail(tfUsernameNew.getText(), tfEmail.getText())) {
+
+                    changePasswordWindow();
+                    forgotPasswordStage.close();
+                    db.dbClose();
+
+                } else {
+                    //loginError();
+                    lbWrongUsernamePwd.setText("WRONG USERNAME OR EMAIL");
+                    lbWrongUsernamePwd.setStyle("-fx-text-fill: red; -fx-font-size: 12");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        });
+        //closes the create account page and returns to login page
+        btnExit.setOnAction((javafx.event.ActionEvent e) -> {
+            forgotPasswordStage.close();
+
+        });
+    }
+    
+        public void changePasswordWindow(){
+
+        TextField tfUsernameDisplay = new TextField();
+        //TextField tfFirstName = new TextField();
+        //TextField tfLastName = new TextField();
+        //TextField tfEmail = new TextField();
+        //TextField tfDob = new TextField();
+        //DatePicker dpDob = new DatePicker();
+        //TextArea tfBio = new TextArea();
+        PasswordField tfPassword3 = new PasswordField();
+        PasswordField tfPassword4 = new PasswordField();
+        Label lbUsernameDisplay = new Label("Username:  ");
+        Label lbPassword3 = new Label("Enter New Password:  ");
+        Label lbPassword4 = new Label("Confirm New Password:  ");
+        //Label lbFirstName = new Label("First Name");
+        //Label lbLastName = new Label("Last Name");
+        //Label lbEmail = new Label("What is your email?   ");
+        //Label lbDob = new Label("Enter Birthday (ex 1990-01-31)");
+        //Label lbBio = new Label("Bio");
+        Button btnChangePassword = new Button("Change");
+        Button btnExit = new Button("Exit");
+        //Button btnBrowse = new Button("Browse");
+        Label lbMessage = new Label("");
+        //ImageView imgProfile = new ImageView(image);
+
+        Stage changePasswordStage = new Stage();
+        //sets title at top of window
+        changePasswordStage.setTitle("Update Password Please");
+
+        VBox vBox = new VBox();
+
+        GridPane gridpane = new GridPane();
+        // gridpane.getColumnConstraints().add(new ColumnConstraints(50));
+
+        StackPane logoStackpane = new StackPane();
+        imgViewLogo.setImage(imgLogo);
+        imgViewLogo.setFitHeight(150);
+        imgViewLogo.setPreserveRatio(true);
+        logoStackpane.getChildren().add(imgViewLogo);
+        logoStackpane.setPadding(new Insets(25));
+        //imgViewLogo.set
+        gridpane.add(lbUsernameDisplay, 0, 0);
+        gridpane.add(tfUsernameDisplay, 1, 0);
+        //gridpane.add(lbEmail, 0, 1);
+        //gridpane.add(tfEmail, 1, 1);
+        gridpane.add(lbPassword3, 0, 2);
+        gridpane.add(tfPassword3, 1, 2);
+        gridpane.add(lbPassword4, 0, 3);
+        gridpane.add(tfPassword4, 1, 3);
+        vBox.getChildren().addAll(gridpane, btnChangePassword, btnExit, lbMessage);
+
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(10);
+
+        //width, height of actual scene
+        Scene changePasswordDashboard = new Scene(vBox, 400, 450);
+        changePasswordDashboard.getStylesheets().add(SocialGamerPro.class.getResource("Login.css").toExternalForm());
+
+        changePasswordStage.setScene(changePasswordDashboard);
+//        createAccountStage.setMinHeight(650);
+//        createAccountStage.setMinWidth(1100);
+        //primaryStage.close();
+		changePasswordStage.show();
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        changePasswordStage.setX((primScreenBounds.getWidth() - changePasswordStage.getWidth()) / 2);
+        changePasswordStage.setY((primScreenBounds.getHeight() - changePasswordStage.getHeight()) / 2);
+        changePasswordStage.show();
+        //set background color to a light grey
+//        vBox.setStyle("-fx-background-color: #DCDCDC;");
+
+        btnChangePassword.setOnAction((javafx.event.ActionEvent e) -> {
             
 //validates password using regex to require a number, a lowercase letter, an uppercase letter, a special character (!@#$%^&+=), and has to be 8 characters or more).
             Pattern p = Pattern.compile("((?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&+=]).{8,})");
@@ -403,19 +506,17 @@ public class SocialGamerPro extends Application {
             String pwd = tfPassword3.getText();
             String confpwd = tfPassword4.getText();
 
-            if (tfUsernameNew.getText().isEmpty()
-                    | tfEmail.getText().isEmpty()
-                    | !m.matches()) {
+            if ( !m.matches()) {
                 Alert alert = new Alert(AlertType.WARNING);
                 alert.setTitle("Error in Validating Fields");
                 alert.setHeaderText(null);
-                alert.setContentText("Make Sure Fields are not blank");
+                alert.setContentText("Please make sure your fields are not empty and that your password is 8 or more characters, has a number, a lowercase letter, an uppercase letter, and a special character.");
                 alert.showAndWait();
             } else {
             //verifying that the password matches in order to update password
                 if (pwd.equals(confpwd)) {
 
-                    System.out.println("Updating complete");
+                    System.out.println("Updating password complete");
                     DBUtility dbSendEmail = new DBUtility();
 
                     try {
@@ -425,21 +526,33 @@ public class SocialGamerPro extends Application {
                     }
 
                     try {
-                        dbSendEmail.updateEmail(tfUsernameNew.getText(), tfPassword3.getText(), tfEmail.getText());
+                        dbSendEmail.updateEmail(tfUsernameDisplay.getText(), tfPassword3.getText());
+                        
                     } catch (SQLException ex) {
                         Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     try {
+                        lbMessage.setText("Password Changed Successfully!!");
+                        lbMessage.setStyle("-fx-text-fill: red; -fx-font-size: 12");
+                        changePasswordStage.close();
                         dbSendEmail.dbClose();
+
                     } catch (SQLException ex) {
                         Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    }  
                 } 
+                else {
+                    Alert alert = new Alert(AlertType.WARNING);
+                    alert.setTitle("Error in Password Fields");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please make sure your passwords match.");
+                    alert.showAndWait();
+                }
             }
         });
         //closes the create account page and returns to login page
         btnExit.setOnAction((javafx.event.ActionEvent e) -> {
-            forgotPasswordStage.close();
+            changePasswordStage.close();
 
         });
     }
