@@ -144,7 +144,7 @@ public class DBUtility {
 
     }
 
-    public void addGameToUserList(String gameTitle, int userID) throws SQLException {
+    public void addGameToUserList(String gameTitle, int userID, int rating, String review) throws SQLException {
         int gameID = 999999;
 
         stmt = conn.createStatement();
@@ -158,8 +158,11 @@ public class DBUtility {
 //        System.out.println("userID = " + userID);
         stmt = conn.createStatement();
 
-        stmt.executeUpdate("INSERT INTO `GamesPlayed` (`userID`, `gameID`) VALUES ('" + userID + "','" + gameID + "')");
+        stmt.executeUpdate("INSERT INTO `GamesPlayed` (`userID`, `gameID`, `rating`, `review`) VALUES ('" + userID + "','" + gameID + "','" + rating + "','" + review + "')");
 
+//        stmt = conn.createStatement();
+//        
+//        stmt.executeUpdate("INSERT INTO `ReviewRating` (`userID`, `gameID`, `rating`, `reviewText`) VALUES ('" + userID + "','" + gameID + "','" + rating + "','" + review + "')");
     }
 
     //gets users for friends list, will eventually pull from follower table
@@ -194,9 +197,15 @@ public class DBUtility {
         String gameTitle;
         int year;
         String genre;
+        int rating;
+        String review;
         stmt = conn.createStatement();
 
-        resultSet = stmt.executeQuery("SELECT Title, YearPublished, Genre "
+//        resultSet = stmt.executeQuery("SELECT Title, YearPublished, Genre "
+//                + "FROM GamesLibrary JOIN GamesPlayed "
+//                + "ON GamesLibrary.gameID = GamesPlayed.gameID "
+//                + "WHERE GamesPlayed.userID = " + userID + " ORDER BY Title");
+        resultSet = stmt.executeQuery("SELECT GamesLibrary.Title, GamesLibrary.YearPublished, GamesLibrary.Genre, GamesPlayed.rating, GamesPlayed.review "
                 + "FROM GamesLibrary JOIN GamesPlayed "
                 + "ON GamesLibrary.gameID = GamesPlayed.gameID "
                 + "WHERE GamesPlayed.userID = " + userID + " ORDER BY Title");
@@ -205,7 +214,9 @@ public class DBUtility {
             gameTitle = resultSet.getString("Title");
             year = resultSet.getInt("YearPublished");
             genre = resultSet.getString("Genre");
-            GamePlayed game = new GamePlayed(gameTitle, year, genre);
+            rating = resultSet.getInt("rating");
+            review = resultSet.getString("review");
+            GamePlayed game = new GamePlayed(gameTitle, year, genre, rating, review);
 //            System.out.println(game.getGameTitle());
 //            System.out.println(game.getYear());
 //            System.out.println(game.getGenre());
@@ -231,32 +242,33 @@ public class DBUtility {
 
     }
 
-     //method for getting msgs
-    public ResultSet getMsg(String receiver,boolean check) throws SQLException {
+    //method for getting msgs
+    public ResultSet getMsg(String receiver, boolean check) throws SQLException {
 
 //        dbConnect();
         //first have to creat a statement
         stmt = conn.createStatement();
-        if(check){
+        if (check) {
             resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "' ORDER by msgID desc limit 3");
-        }else{
+        } else {
             resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "'");
         }
         return resultSet;
     }
-     public ResultSet getMsgsforSpecificUser(String receiver,String sender,boolean check) throws SQLException {
+
+    public ResultSet getMsgsforSpecificUser(String receiver, String sender, boolean check) throws SQLException {
 
         stmt = conn.createStatement();
-        if (check){
-            if(sender.equalsIgnoreCase("all")){
-            resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "' ORDER by msgID desc limit 3");
-            }else{
+        if (check) {
+            if (sender.equalsIgnoreCase("all")) {
+                resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "' ORDER by msgID desc limit 3");
+            } else {
                 resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "' and msgSender = '" + sender + "' ORDER by msgID desc limit 3");
             }
-        }else{
-            if(sender.equalsIgnoreCase("all")){
+        } else {
+            if (sender.equalsIgnoreCase("all")) {
                 resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "'");
-            }else{
+            } else {
                 resultSet = stmt.executeQuery("SELECT * FROM messenging where msgReceiver = '" + receiver + "' and msgSender = '" + sender + "'");
             }
         }
@@ -284,7 +296,7 @@ public class DBUtility {
 
     }
 
-    public void updateProfilePicture (String userName, File image) throws SQLException, FileNotFoundException, IOException {
+    public void updateProfilePicture(String userName, File image) throws SQLException, FileNotFoundException, IOException {
 
         stmt = conn.createStatement();
         // this runs the SQL query - notice the extra single quotes around the string.  Don't forget those.
@@ -299,7 +311,7 @@ public class DBUtility {
         ps.close();
 
     }
-        
+
     public void updateEmail(String user, String password) throws SQLException {
 
         dbConnect();
@@ -309,7 +321,7 @@ public class DBUtility {
         stmt.executeUpdate("UPDATE userLogin SET userPassword='" + password + "' WHERE userName = '" + user + "'");
 
     }
-    
+
     public boolean checkEmail(String inputUserName, String inputEmail) throws SQLException {
         String username = null;
         String email = null;

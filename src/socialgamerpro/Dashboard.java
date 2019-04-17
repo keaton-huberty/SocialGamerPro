@@ -166,6 +166,8 @@ public class Dashboard {
         cLabel.setStyle("-fx-font: 24 arial;");
         Button btnAddGameUser = new Button("+ to List");
         Button btnAddGameLibrary = new Button("+ to Library");
+        Button btnRemoveGame = new Button("Remove Selected Game");
+        Button btnEditGame = new Button("Edit Selected Game");
 
         Button editInfo = new Button("Edit Info");
         
@@ -250,7 +252,7 @@ public class Dashboard {
         //add to top pane
         topPane.getChildren().addAll(tab, profilePicView, nameAndBio);
         topPane.setHgap(10);
-        HBox gamesIPlayBox = new HBox(cLabel, btnAddGameUser, btnAddGameLibrary);
+        HBox gamesIPlayBox = new HBox(cLabel, btnAddGameUser, btnAddGameLibrary, btnRemoveGame, btnEditGame);
         gamesIPlayBox.setSpacing(10);
         leftVbox.getChildren().addAll(topPane, gamesIPlayBox, table, btn, btnLabel1);
         leftVbox.setAlignment(Pos.TOP_LEFT);
@@ -756,6 +758,14 @@ public class Dashboard {
     public void addGameUserList() throws SQLException {
 
         ListView gamesList = new ListView();
+        ComboBox cBoxGameRating = new ComboBox();
+        Label lbGameRating = new Label("Please Enter Game Score"
+                + "\n 1 - worst ... 10 - Best");
+        Label lbGameReview = new Label("Please Enter Game Review (300 Characters)");
+        TextArea txtAreaReview = new TextArea();
+        
+        cBoxGameRating.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        
         DBUtility db = new DBUtility();
         db.dbConnect();
         ResultSet gamesListResults = db.getGamesLibrary();
@@ -768,7 +778,7 @@ public class Dashboard {
 
         VBox sceneVBox = new VBox();
         Button btnAddGame = new Button("Add to my list");
-        sceneVBox.getChildren().addAll(gamesList, btnAddGame);
+        sceneVBox.getChildren().addAll(gamesList, lbGameRating, cBoxGameRating, lbGameReview, txtAreaReview, btnAddGame);
         sceneVBox.setAlignment(Pos.CENTER);
         sceneVBox.setPadding(new Insets(20, 20, 20, 20));
         sceneVBox.setSpacing(20.0);
@@ -787,7 +797,13 @@ public class Dashboard {
 
                 String gameTitle = gamesList.getSelectionModel().getSelectedItems().toString();
                 gameTitle = gameTitle.substring(1, gameTitle.length() - 1);
-                db.addGameToUserList(gameTitle, this.userID);
+                int rating = (int) cBoxGameRating.getSelectionModel().getSelectedItem();
+                String review = txtAreaReview.getText();
+                
+                System.out.println("check rating score: " + rating);
+                System.out.println("check review: " + review);
+                
+                db.addGameToUserList(gameTitle, this.userID, rating, review);
 
                 Alert alert = new Alert(AlertType.WARNING);
                 alert.setTitle("Game Added to Your List!");
@@ -1084,7 +1100,7 @@ public class Dashboard {
         TableColumn reviewColumn = new TableColumn("Review");
         reviewColumn.setMinWidth(150.0);
         reviewColumn.setCellValueFactory(
-                new PropertyValueFactory<>("review"));
+                new PropertyValueFactory<>("btnReview"));
 
         db.dbConnect();
 
