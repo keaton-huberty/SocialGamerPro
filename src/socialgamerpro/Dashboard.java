@@ -116,7 +116,7 @@ public class Dashboard {
         VBox nameAndGame = new VBox();
         TextField name = new TextField(fName + " " + lName);
         name.setDisable(true);
-        name.setStyle("-fx-font: 24 arial;");
+        name.setStyle("-fx-font: 24 arial; -fx-opacity: 1.0; -fx-control-inner-background: #DCDCDC;");
         Text currentGame = new Text("Now Playing: Call of Duty: Modern Warfare 2");
         currentGame.setStyle("fx-font: 16 arial;");
         nameAndGame.getChildren().addAll(name, currentGame);
