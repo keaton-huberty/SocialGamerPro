@@ -4,6 +4,7 @@ Capstone Team 1n
 package socialgamerpro;
 
 import java.awt.Desktop;
+import javafx.scene.input.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,9 +36,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Screen;
@@ -46,7 +51,7 @@ import javafx.stage.Stage;
  * Keaton, Will, Mike, and Amin 1/21/2019
  *
  */
-public class SocialGamerPro extends Application {
+public class SocialGamerPro extends Application{
 
     private final TextField tfUsername = new TextField();
     private final PasswordField tfPassword = new PasswordField();
@@ -68,6 +73,7 @@ public class SocialGamerPro extends Application {
     private FileInputStream fis;
     //private Statement stmt;
     private final PreparedStatement stmt = null;
+    Text text = new Text();
 
     // New comment to test pushing to GitHub
     @Override
@@ -92,13 +98,51 @@ public class SocialGamerPro extends Application {
 //        tfPassword.setMaxWidth(200);
         //VBox vBoxDashboard = new VBox();
         // adding the labesl, textfields and button to the vertical box
-        vBox.getChildren().addAll(logoStackpane, tfUsername, lbUsername, tfPassword, lbPassword, btnLogin, btnCreateAccount, btnForgotPassword, wrongLogin);
+        vBox.getChildren().addAll(logoStackpane, text, tfUsername, lbUsername, tfPassword, lbPassword, btnLogin, btnCreateAccount, btnForgotPassword, wrongLogin);
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(5);
         //vBox.set
 
         // Adding the vertical box to the scene
-        Scene scene = new Scene(vBox, 250, 450);
+        Scene scene = new Scene(vBox, 250, 500);
+ 
+        // Key Pressed Event starts here - needs a switch statement
+        scene.setOnKeyPressed(event -> {
+            switch (event.getCode())
+            {
+                case ENTER:
+            // connecting to the database
+            try {
+                db.dbConnect();
+            } catch (SQLException ex) {
+                Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            try {
+                if (db.checkLogin(tfUsername.getText(), tfPassword.getText())) {
+
+                    primaryStage.close();
+                    User user = new User(db.getUserInfo(tfUsername.getText()));
+                    user.getDashboard().launchDashboard();
+                    db.dbClose();
+
+                } else {
+                    //loginError();
+                    wrongLogin.setText("WRONG USERNAME OR PASSWORD");
+                    wrongLogin.setStyle("-fx-text-fill: red; -fx-font-size: 12");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                    break;
+                default:
+                    break;
+            }
+            
+            });
+        //scene.setOnKeyReleased(event -> text.setText(""));
 
         // adding the stylesheet
         scene.getStylesheets().add(SocialGamerPro.class.getResource("Login.css").toExternalForm());
@@ -426,7 +470,7 @@ public class SocialGamerPro extends Application {
         });
     }
     
-        public void changePasswordWindow(){
+    public void changePasswordWindow(){
 
         TextField tfUsernameDisplay = new TextField();
         //TextField tfFirstName = new TextField();
@@ -581,5 +625,5 @@ public class SocialGamerPro extends Application {
         // TODO code application logic here
         launch(args);
     }
-
+    
 }
