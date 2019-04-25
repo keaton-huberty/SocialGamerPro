@@ -546,6 +546,8 @@ public class Dashboard {
                 //  db.dbClose();
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         });
@@ -566,6 +568,8 @@ public class Dashboard {
                 userFriend.getDashboard().friendDashboard(userFriend.getName(), userFriend.getUserID());
                 // db.dbClose();
             } catch (SQLException ex) {
+                Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -822,15 +826,21 @@ public class Dashboard {
 
     }
 
-    public void friendDashboard(String rootUserName, int rootUserID) throws SQLException {
+    public void friendDashboard(String rootUserName, int rootUserID) throws SQLException, IOException {
 
         Stage dashboardStage = new Stage();
         //sets title at top of window
         dashboardStage.setTitle("SocialGamer Pro");
         //set up left/top pane
         //set up profile picture
-        Image profilePic = new Image("userPic.png");
-        ImageView profilePicView = new ImageView(profilePic);
+        //Image profilePic = new Image("userPic.png");
+        //ImageView profilePicView = new ImageView(profilePic);
+        //profilePicView.setPreserveRatio(true);
+        //profilePicView.setFitHeight(150);
+        DBUtility db = new DBUtility();
+        db.dbConnect();
+        Image blobPic = db.loadProfilePicture(this.userID);
+        ImageView profilePicView = new ImageView(blobPic);
         profilePicView.setPreserveRatio(true);
         profilePicView.setFitHeight(150);
         //FollowButton
@@ -842,20 +852,15 @@ public class Dashboard {
         nameAndGame.getChildren().addAll(name, btnFollow);
         //flow pane for holding picture, name/game, and messages button
         FlowPane topPane = new FlowPane();
-        Text tab = new Text("\t   ");
         //add to top pane
         topPane.getChildren().addAll(profilePicView, nameAndGame);
         topPane.setHgap(10);
         nameAndGame.setAlignment(Pos.CENTER_LEFT);
         gamesTable = createGamesTable(rootUserID);
-
-        DBUtility db = new DBUtility();
-
-        db.dbConnect();
 //        gamesTable.setItems(db.getGamesPlayed(rootUserID));
 //        gamesTable.getColumns().addAll(titleColumn, yearColumn, genreColumn);
 
-        profilePicView.setPreserveRatio(true);
+        //profilePicView.setPreserveRatio(true);
         VBox leftVbox = new VBox();
         Text bioLabel = new Text("User Biography");
         bioLabel.setStyle("-fx-font: 24 arial;");
