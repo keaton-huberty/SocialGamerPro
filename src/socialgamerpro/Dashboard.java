@@ -827,24 +827,14 @@ public class Dashboard {
         Stage dashboardStage = new Stage();
         //sets title at top of window
         dashboardStage.setTitle("SocialGamer Pro");
-
         //set up left/top pane
         //set up profile picture
         Image profilePic = new Image("userPic.png");
         ImageView profilePicView = new ImageView(profilePic);
         profilePicView.setPreserveRatio(true);
         profilePicView.setFitHeight(150);
-        //setup home button icon
-        Image homeIcon = new Image("home.png");
-        ImageView homeView = new ImageView(homeIcon);
-        homeView.setPreserveRatio(true);
-        homeView.setFitHeight(20);
-        Button homeButton = new Button();
-
         //FollowButton
         Button btnFollow = new Button("Follow");
-
-        homeButton.setGraphic(homeView);
         //vbox for holding name over current game
         VBox nameAndGame = new VBox();
         Text name = new Text(fName + " " + lName);
@@ -854,24 +844,9 @@ public class Dashboard {
         FlowPane topPane = new FlowPane();
         Text tab = new Text("\t   ");
         //add to top pane
-        topPane.getChildren().addAll(tab, profilePicView, nameAndGame);
+        topPane.getChildren().addAll(profilePicView, nameAndGame);
         topPane.setHgap(10);
         nameAndGame.setAlignment(Pos.CENTER_LEFT);
-
-//        gamesTable.setEditable(true);
-//
-//        TableColumn titleColumn = new TableColumn("Title");
-//        titleColumn.setMinWidth(250.0);
-//        titleColumn.setCellValueFactory(
-//                new PropertyValueFactory<>("gameTitle"));
-//        TableColumn yearColumn = new TableColumn("Release Date");
-//        yearColumn.setMinWidth(150.0);
-//        yearColumn.setCellValueFactory(
-//                new PropertyValueFactory<>("year"));
-//        TableColumn genreColumn = new TableColumn("Genre");
-//        genreColumn.setMinWidth(250.0);
-//        genreColumn.setCellValueFactory(
-//                new PropertyValueFactory<>("genre"));
         gamesTable = createGamesTable(rootUserID);
 
         DBUtility db = new DBUtility();
@@ -882,23 +857,22 @@ public class Dashboard {
 
         profilePicView.setPreserveRatio(true);
         VBox leftVbox = new VBox();
-        Text bioLabel = new Text("\tUser Biography:");
+        Text bioLabel = new Text("User Biography");
         bioLabel.setStyle("-fx-font: 24 arial;");
         Text userBio = new Text(bio);
         userBio.setStyle("-fx-font: 18 arial;");
-        Text cLabel = new Text("\tGames I Play: ");
+        userBio.wrappingWidthProperty().set(600);
+        Text cLabel = new Text("Games I Play");
         cLabel.setStyle("-fx-font: 24 arial;");
         Text btnLabel1 = new Text("");
 
         Text tab2 = new Text("\t   ");
         HBox table = new HBox();
         table.getChildren().addAll(tab2, gamesTable);
-        Text tab3 = new Text("\t   ");
+        Text tab3 = new Text("\t    ");
         HBox btn = new HBox();
         btn.getChildren().addAll(tab3);
-        Separator horizSep = new Separator();
-        horizSep.setOrientation(Orientation.HORIZONTAL);
-        leftVbox.getChildren().addAll(topPane, bioLabel, cLabel, table, btn, btnLabel1);
+        leftVbox.getChildren().addAll(topPane, bioLabel, userBio, cLabel, table, btn, btnLabel1);
         leftVbox.setAlignment(Pos.TOP_LEFT);
         leftVbox.setSpacing(10);
 
@@ -946,13 +920,14 @@ public class Dashboard {
         // bPane.setRight(rightVbox);
         bPane.setBottom(bottomText);
         bPane.setLeft(leftVbox);
-
+        Insets insets = new Insets(25);
+        bPane.setMargin(leftVbox, insets);
         //width, height of actual scene
-        Scene friendDashboard = new Scene(bPane, 1100, 650);
+        Scene friendDashboard = new Scene(bPane, 900, 650);
 
         dashboardStage.setScene(friendDashboard);
         dashboardStage.setMinHeight(450);
-        dashboardStage.setMinWidth(550);
+        dashboardStage.setMinWidth(400);
 
         //primaryStage.close();
         dashboardStage.show();
