@@ -873,7 +873,7 @@ public class Dashboard {
 
         Text tab2 = new Text("\t   ");
         HBox table = new HBox();
-        table.getChildren().addAll(tab2, gamesTable);
+        table.getChildren().addAll(gamesTable);
         Text tab3 = new Text("\t    ");
         HBox btn = new HBox();
         btn.getChildren().addAll(tab3);
