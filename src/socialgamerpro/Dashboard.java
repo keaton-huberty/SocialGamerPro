@@ -159,7 +159,6 @@ public class Dashboard {
         userBio.setPrefWidth(400);
         userBio.setTooltip(tooltip);
         userBio.setWrapText(true);
-        
 
         userBio.setStyle("-fx-font: 18 arial; -fx-opacity: 1.0; -fx-control-inner-background: #DCDCDC; -fx-text-alignment: center ;");
         Text cLabel = new Text("\tGames I Play: ");
@@ -167,10 +166,11 @@ public class Dashboard {
         Button btnAddGameUser = new Button("+ to List");
         Button btnAddGameLibrary = new Button("+ to Library");
         Button btnRemoveGame = new Button("Remove Selected Game");
+
         Button btnEditGame = new Button("Edit Selected Game");
 
         Button editInfo = new Button("Edit Info");
-        
+
         Button updateInfo = new Button("Update Info");
         updateInfo.setVisible(false);
 
@@ -182,17 +182,16 @@ public class Dashboard {
 
             editProfilePicture();
         });
-        
+
         //setting listner on edit info
         editInfo.setOnAction((javafx.event.ActionEvent e) -> {
             name.setDisable(false);
             userBio.setDisable(false);
-            
+
             btnChangeProfilePic.setVisible(true);
             updateInfo.setVisible(true);
             editInfo.setVisible(false);
-            
-            
+
             userBio.setStyle("-fx-font: 18 arial; -fx-opacity: 1.0; -fx-control-inner-background: #FFF; ");
             name.setStyle("-fx-font: 18 arial; -fx-opacity: 1.0; -fx-control-inner-background: #FFF;");
 
@@ -207,7 +206,6 @@ public class Dashboard {
             updateInfo.setVisible(false);
             editInfo.setVisible(true);
             btnChangeProfilePic.setVisible(false);
-            
 
             String name1 = name.getText();
             String bio = userBio.getText();
@@ -233,7 +231,53 @@ public class Dashboard {
             }
         });
 
-        
+        btnEditGame.setOnAction((javafx.event.ActionEvent e) -> {
+
+            int editRating = 0;
+            String editReview = "";
+
+            System.out.println("TableView selection index check: " + gamesTable.getSelectionModel().getSelectedIndex());
+            int tableViewGameIndex = gamesTable.getSelectionModel().getSelectedIndex();
+            GamePlayed selectedGame = (GamePlayed) gamesTable.getSelectionModel().getSelectedItem();
+            int gamesPlayedID = selectedGame.getGamesPlayedID();
+
+            // System.out.println("GamePlayedID from tableView selection: " + gamePlayedID);
+            try {
+                editGameUserList(gamesPlayedID);
+            } catch (SQLException ex) {
+                Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        });
+
+        btnRemoveGame.setOnAction((javafx.event.ActionEvent e) -> {
+
+            System.out.println("REMOVE GAME TableView selection index check: " + gamesTable.getSelectionModel().getSelectedIndex());
+            int tableViewGameIndex = gamesTable.getSelectionModel().getSelectedIndex();
+            GamePlayed selectedGame = (GamePlayed) gamesTable.getSelectionModel().getSelectedItem();
+            int gamesPlayedID = selectedGame.getGamesPlayedID();
+
+            // System.out.println("GamePlayedID from tableView selection: " + gamePlayedID);
+            try {
+                db.removeGameFromUserList(gamesPlayedID);
+            } catch (SQLException ex) {
+                Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Game Removed!");
+            alert.setHeaderText(null);
+            alert.setContentText("This game has been removed from your list!");
+            alert.showAndWait();
+
+            gamesTable.getItems().clear();
+            try {
+                gamesTable.setItems(db.getGamesPlayed(this.userID));
+            } catch (SQLException ex) {
+                Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        });
 
         Text tab5 = new Text("\t   ");
         Text tab2 = new Text("\t   ");
@@ -242,11 +286,11 @@ public class Dashboard {
         Text tab3 = new Text("\t ");
         HBox btn = new HBox();
         btn.setSpacing(8);
-        btn.getChildren().addAll(tab3, editInfo, updateInfo,btnChangeProfilePic);
+        btn.getChildren().addAll(tab3, editInfo, updateInfo, btnChangeProfilePic);
         Separator horizSep = new Separator();
         horizSep.setOrientation(Orientation.HORIZONTAL);
         FlowPane topPane = new FlowPane();
-        HBox bioBox = new HBox( userBio);
+        HBox bioBox = new HBox(userBio);
         VBox nameAndBio = new VBox(tab, name, bioBox);
         nameAndBio.setSpacing(15);
         //add to top pane
@@ -277,7 +321,7 @@ public class Dashboard {
         Text flLabel = new Text("Following");
         flLabel.setStyle("-fx-font: 24 arial;");
 
-       Text lable = new Text("Received Msgs");
+        Text lable = new Text("Received Msgs");
         Text selectuserLable = new Text("Select User to Message");
         //send button
         Button sendButton = new Button("Send");
@@ -577,7 +621,7 @@ public class Dashboard {
         search.setPromptText("Username");
         HBox followingHbox = new HBox(flLabel, btnViewFollower);
         followingHbox.setSpacing(20);
-        rightVbox.getChildren().addAll(searchBox, followingHbox, friendsList,selectFriendToViewMsg, textArea,recentAllHbox,friends1,msgType, buttons);
+        rightVbox.getChildren().addAll(searchBox, followingHbox, friendsList, selectFriendToViewMsg, textArea, recentAllHbox, friends1, msgType, buttons);
 
         //set up bottom pane
         Text bottomText = new Text("Created by Keaton, Will, Mike, and Amin (2019)");
@@ -763,9 +807,9 @@ public class Dashboard {
                 + "\n 1 - worst ... 10 - Best");
         Label lbGameReview = new Label("Please Enter Game Review (300 Characters)");
         TextArea txtAreaReview = new TextArea();
-        
+
         cBoxGameRating.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        
+
         DBUtility db = new DBUtility();
         db.dbConnect();
         ResultSet gamesListResults = db.getGamesLibrary();
@@ -799,10 +843,10 @@ public class Dashboard {
                 gameTitle = gameTitle.substring(1, gameTitle.length() - 1);
                 int rating = (int) cBoxGameRating.getSelectionModel().getSelectedItem();
                 String review = txtAreaReview.getText();
-                
+
                 System.out.println("check rating score: " + rating);
                 System.out.println("check review: " + review);
-                
+
                 db.addGameToUserList(gameTitle, this.userID, rating, review);
 
                 Alert alert = new Alert(AlertType.WARNING);
@@ -814,6 +858,75 @@ public class Dashboard {
                 addGameStage.close();
 
                 gamesTable.setItems(db.getGamesPlayed(this.userID));
+            } catch (SQLException ex) {
+                Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        });
+
+    }
+
+    public void editGameUserList(int gamesPlayedID) throws SQLException {
+        //int gameIndex = tableViewGameIndex;
+        //ListView gamesList = new ListView();
+        ComboBox cBoxGameRating = new ComboBox();
+        Label lbGameRating = new Label("Please Enter Game Score"
+                + "\n 1 - worst ... 10 - Best");
+        Label lbGameReview = new Label("Please Enter Game Review (300 Characters)");
+        TextArea txtAreaReview = new TextArea();
+
+        cBoxGameRating.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+        DBUtility db = new DBUtility();
+        db.dbConnect();
+//        ResultSet gamesListResults = db.getGamesLibrary();
+//        while (gamesListResults.next()) {
+//            gamesList.getItems().add(
+//                    gamesListResults.getString("Title")//adding users in drop down from database
+//            );
+//
+//        }
+
+        VBox sceneVBox = new VBox();
+        Button btnEditGame = new Button("Edit Game");
+        sceneVBox.getChildren().addAll(lbGameRating, cBoxGameRating, lbGameReview, txtAreaReview, btnEditGame);
+        sceneVBox.setAlignment(Pos.CENTER);
+        sceneVBox.setPadding(new Insets(20, 20, 20, 20));
+        sceneVBox.setSpacing(20.0);
+
+        Stage addGameStage = new Stage();
+        addGameStage.setTitle("Add a new game to your List");
+
+        Scene addGameDashboard = new Scene(sceneVBox);
+
+        addGameStage.setScene(addGameDashboard);
+
+        addGameStage.show();
+
+        btnEditGame.setOnAction((javafx.event.ActionEvent e) -> {
+            try {
+
+                //String gameTitle = gamesList.getSelectionModel().getSelectedItems().toString();
+                //gameTitle = gameTitle.substring(1, gameTitle.length() - 1);
+                int rating = (int) cBoxGameRating.getSelectionModel().getSelectedItem();
+                String review = txtAreaReview.getText();
+
+                System.out.println("check rating score: " + rating);
+                System.out.println("check review: " + review);
+
+                db.editGameToUserList(gamesPlayedID, rating, review);
+
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle("Edit Game Successful!");
+                alert.setHeaderText(null);
+                alert.setContentText("Review and rating have been chanaged!");
+                alert.showAndWait();
+
+                addGameStage.close();
+
+                gamesTable.getItems().clear();
+                gamesTable.setItems(db.getGamesPlayed(this.userID));
+
             } catch (SQLException ex) {
                 Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -1005,7 +1118,7 @@ public class Dashboard {
         gridpane.add(tfEmail, 1, 5);
         gridpane.add(lbDob, 0, 6);
         gridpane.add(dpDob, 1, 6);
-*/
+         */
         vBox.getChildren().addAll(gridpane, lbUpdatePicture, lbBrowsePath, btnBrowse, imgProfile, btnUpdatePic, btnExit);
 
         vBox.setAlignment(Pos.CENTER);

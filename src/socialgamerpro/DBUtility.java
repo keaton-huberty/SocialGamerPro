@@ -147,6 +147,9 @@ public class DBUtility {
     public void addGameToUserList(String gameTitle, int userID, int rating, String review) throws SQLException {
         int gameID = 999999;
 
+        System.out.println("addGameToUserList parameters check: \ngame title: " + gameTitle + "\n userID: " + userID + ""
+                + "\n rating: " + rating + "\n review: " + review);
+
         stmt = conn.createStatement();
 
         resultSet = stmt.executeQuery("SELECT gameID FROM GamesLibrary WHERE title = '" + gameTitle + "'");
@@ -158,11 +161,23 @@ public class DBUtility {
 //        System.out.println("userID = " + userID);
         stmt = conn.createStatement();
 
-        stmt.executeUpdate("INSERT INTO `GamesPlayed` (`userID`, `gameID`, `rating`, `review`) VALUES ('" + userID + "','" + gameID + "','" + rating + "','" + review + "')");
+        stmt.execute("INSERT INTO `GamesPlayed` (`userID`, `gameID`, `rating`, `review`) VALUES ('" + userID + "','" + gameID + "','" + rating + "','" + review + "')");
 
 //        stmt = conn.createStatement();
 //        
 //        stmt.executeUpdate("INSERT INTO `ReviewRating` (`userID`, `gameID`, `rating`, `reviewText`) VALUES ('" + userID + "','" + gameID + "','" + rating + "','" + review + "')");
+    }
+
+    public void editGameToUserList(int gamesPlayedID, int rating, String review) throws SQLException {
+
+        stmt = conn.createStatement();
+        stmt.executeUpdate("UPDATE GamesPlayed SET rating='" + rating + "', review='" + review + "' WHERE gamesPlayedID = '" + gamesPlayedID + "'");
+    }
+
+    public void removeGameFromUserList(int gamesPlayedID) throws SQLException {
+
+        stmt = conn.createStatement();
+        stmt.executeUpdate("DELETE FROM GamesPlayed WHERE gamesPlayedID = '" + gamesPlayedID + "'");
     }
 
     //gets users for friends list, will eventually pull from follower table
@@ -194,6 +209,7 @@ public class DBUtility {
     }
 
     public ObservableList<GamePlayed> getGamesPlayed(int userID) throws SQLException {
+        int gamesPlayedID;
         String gameTitle;
         int year;
         String genre;
@@ -205,18 +221,19 @@ public class DBUtility {
 //                + "FROM GamesLibrary JOIN GamesPlayed "
 //                + "ON GamesLibrary.gameID = GamesPlayed.gameID "
 //                + "WHERE GamesPlayed.userID = " + userID + " ORDER BY Title");
-        resultSet = stmt.executeQuery("SELECT GamesLibrary.Title, GamesLibrary.YearPublished, GamesLibrary.Genre, GamesPlayed.rating, GamesPlayed.review "
+        resultSet = stmt.executeQuery("SELECT GamesLibrary.Title, GamesLibrary.YearPublished, GamesLibrary.Genre, GamesPlayed.gamesPlayedID, GamesPlayed.rating, GamesPlayed.review "
                 + "FROM GamesLibrary JOIN GamesPlayed "
                 + "ON GamesLibrary.gameID = GamesPlayed.gameID "
                 + "WHERE GamesPlayed.userID = " + userID + " ORDER BY Title");
 
         while (resultSet.next()) {
+            gamesPlayedID = resultSet.getInt("gamesPlayedID");
             gameTitle = resultSet.getString("Title");
             year = resultSet.getInt("YearPublished");
             genre = resultSet.getString("Genre");
             rating = resultSet.getInt("rating");
             review = resultSet.getString("review");
-            GamePlayed game = new GamePlayed(gameTitle, year, genre, rating, review);
+            GamePlayed game = new GamePlayed(gamesPlayedID, gameTitle, year, genre, rating, review);
 //            System.out.println(game.getGameTitle());
 //            System.out.println(game.getYear());
 //            System.out.println(game.getGenre());
