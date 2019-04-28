@@ -836,11 +836,15 @@ public class Dashboard {
 
         btnAddGame.setOnAction((javafx.event.ActionEvent e) -> {
             try {
-
+                int rating = 0;
                 String gameTitle = gamesList.getSelectionModel().getSelectedItems().toString();
                 gameTitle = gameTitle.substring(1, gameTitle.length() - 1);
-                int rating = (int) cBoxGameRating.getSelectionModel().getSelectedItem();
+                if(cBoxGameRating.hasProperties()){
+                rating = (int) cBoxGameRating.getSelectionModel().getSelectedItem();}
+                System.out.println("Rating check: " + rating);
                 String review = txtAreaReview.getText();
+                
+               // if(rating < 0){rating = 0;}
 
                 System.out.println("check rating score: " + rating);
                 System.out.println("check review: " + review);
