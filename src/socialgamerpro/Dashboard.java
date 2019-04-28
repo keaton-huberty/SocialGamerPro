@@ -103,15 +103,9 @@ public class Dashboard {
         ImageView profilePicView = new ImageView(blobPic);
         profilePicView.setPreserveRatio(true);
         profilePicView.setFitHeight(150);
-        //magnifying glass for search icon
-        Image searchIcon = new Image("search.png");
-        ImageView searchView = new ImageView(searchIcon);
-        searchView.setFitHeight(20);
-        searchView.setFitWidth(20);
         //buttons
         Button btnViewFollower = new Button("View Profile");
         Button btnViewFollowing = new Button("Go");
-        //btnViewFollowing.setGraphic(searchView);
         //vbox for holding name over current game
         VBox nameAndGame = new VBox();
         TextField name = new TextField(fName + " " + lName);
@@ -607,7 +601,7 @@ public class Dashboard {
         BorderPane.setMargin(leftVbox, insets);
         BorderPane.setMargin(bottomText, insets);
         //width, height of actual 
-        Scene dashboard = new Scene(bPane, 500, 650);
+        Scene dashboard = new Scene(bPane, 1250, 650);
 
         dashboard.getStylesheets().add(SocialGamerPro.class.getResource("SocialGamerStyle.css").toExternalForm());
 
