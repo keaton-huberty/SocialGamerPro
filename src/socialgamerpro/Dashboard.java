@@ -1006,7 +1006,7 @@ public class Dashboard {
                 System.out.println(resultSet.getString("FollowingName"));
                 String nameCheck = resultSet.getString("FollowingName");
                 if (nameCheck.equals(this.userName)) {
-                    btnFollow.setText("Following");
+                    btnFollow.setText("Unfollow");
                 }
 
             }
@@ -1022,7 +1022,17 @@ public class Dashboard {
                 try {
                     db.dbConnect();
                     db.addFollow(rootUserName, this.userName, rootUserID, this.userID);
-                    btnFollow.setText("Following");
+                    btnFollow.setText("Unfollow");
+
+                } catch (SQLException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else if (btnFollow.getText().equals("Unfollow")) {
+                 try {
+                    db.dbConnect();
+                    db.deleteFollow(rootUserName, this.userName, rootUserID, this.userID);
+                    btnFollow.setText("Follow");
 
                 } catch (SQLException ex) {
                     Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
