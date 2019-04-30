@@ -1007,7 +1007,7 @@ public class Dashboard {
                 System.out.println(resultSet.getString("FollowingName"));
                 String nameCheck = resultSet.getString("FollowingName");
                 if (nameCheck.equals(this.userName)) {
-                    btnFollow.setText("Following");
+                    btnFollow.setText("Unfollow");
                 }
 
             }
@@ -1023,7 +1023,17 @@ public class Dashboard {
                 try {
                     db.dbConnect();
                     db.addFollow(rootUserName, this.userName, rootUserID, this.userID);
-                    btnFollow.setText("Following");
+                    btnFollow.setText("Unfollow");
+
+                } catch (SQLException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else if (btnFollow.getText().equals("Unfollow")) {
+                 try {
+                    db.dbConnect();
+                    db.deleteFollow(rootUserName, this.userName, rootUserID, this.userID);
+                    btnFollow.setText("Follow");
 
                 } catch (SQLException ex) {
                     Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
@@ -1133,6 +1143,17 @@ public class Dashboard {
                 } catch (SQLException | IOException ex) {
                     Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                
+                //launch refreshed dashboard
+                try {
+                    editProfilePictureStage.close();
+                    launchDashboard();
+                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 try {
                     dbNewAccount.dbClose();
                 } catch (SQLException ex) {
@@ -1158,9 +1179,6 @@ public class Dashboard {
                 imgProfile.setFitWidth(100);
                 imgProfile.setFitHeight(150);
                 imgProfile.setPreserveRatio(true);
-
-                //layout.setCenter(imgProfile);
-                //BorderPane.setAlignment(imgPro, Pos.TOP_LEFT);
             }
         });
 

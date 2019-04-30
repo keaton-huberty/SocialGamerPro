@@ -254,6 +254,10 @@ public class DBUtility {
         stmt = conn.createStatement();
         stmt.executeUpdate("INSERT INTO `Followers`(`userID`, `userName`, `followingID`, `followingName`) VALUES ('" + userID + "','" + userName + "','" + followID + "','" + followUser + "')");
     }
+    public void deleteFollow(String userName, String followUser, int userID, int followID) throws SQLException {
+        stmt = conn.createStatement();
+        stmt.executeUpdate("DELETE FROM Followers WHERE userName = '" + userName + "' AND followingName = '" + followUser + "'");
+    }
 
 //method for inserting msg into the databse
     public void insertMsg(String sender, String receiver, String msg) throws SQLException {
