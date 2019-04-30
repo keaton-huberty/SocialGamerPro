@@ -1132,6 +1132,17 @@ public class Dashboard {
                 } catch (SQLException | IOException ex) {
                     Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                
+                //launch refreshed dashboard
+                try {
+                    editProfilePictureStage.close();
+                    launchDashboard();
+                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 try {
                     dbNewAccount.dbClose();
                 } catch (SQLException ex) {
@@ -1157,9 +1168,6 @@ public class Dashboard {
                 imgProfile.setFitWidth(100);
                 imgProfile.setFitHeight(150);
                 imgProfile.setPreserveRatio(true);
-
-                //layout.setCenter(imgProfile);
-                //BorderPane.setAlignment(imgPro, Pos.TOP_LEFT);
             }
         });
 
