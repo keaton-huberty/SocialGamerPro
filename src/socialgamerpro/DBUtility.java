@@ -170,8 +170,13 @@ public class DBUtility {
 
     public void editGameToUserList(int gamesPlayedID, int rating, String review) throws SQLException {
 
-        stmt = conn.createStatement();
-        stmt.executeUpdate("UPDATE GamesPlayed SET rating='" + rating + "', review='" + review + "' WHERE gamesPlayedID = '" + gamesPlayedID + "'");
+        if (review.matches("")) {
+            stmt = conn.createStatement();
+            stmt.executeUpdate("UPDATE GamesPlayed SET rating='" + rating + "' WHERE gamesPlayedID = '" + gamesPlayedID + "'");
+        } else {
+            stmt = conn.createStatement();
+            stmt.executeUpdate("UPDATE GamesPlayed SET rating='" + rating + "', review='" + review + "' WHERE gamesPlayedID = '" + gamesPlayedID + "'");
+        }
     }
 
     public void removeGameFromUserList(int gamesPlayedID) throws SQLException {

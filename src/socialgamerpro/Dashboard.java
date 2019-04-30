@@ -839,13 +839,13 @@ public class Dashboard {
                 int rating = 0;
                 String gameTitle = gamesList.getSelectionModel().getSelectedItems().toString();
                 gameTitle = gameTitle.substring(1, gameTitle.length() - 1);
-                if(cBoxGameRating.hasProperties()){
-                rating = (int) cBoxGameRating.getSelectionModel().getSelectedItem();}
+                if (cBoxGameRating.hasProperties()) {
+                    rating = (int) cBoxGameRating.getSelectionModel().getSelectedItem();
+                }
                 System.out.println("Rating check: " + rating);
                 String review = txtAreaReview.getText();
-                
-               // if(rating < 0){rating = 0;}
 
+                // if(rating < 0){rating = 0;}
                 System.out.println("check rating score: " + rating);
                 System.out.println("check review: " + review);
 
@@ -881,13 +881,6 @@ public class Dashboard {
 
         DBUtility db = new DBUtility();
         db.dbConnect();
-//        ResultSet gamesListResults = db.getGamesLibrary();
-//        while (gamesListResults.next()) {
-//            gamesList.getItems().add(
-//                    gamesListResults.getString("Title")//adding users in drop down from database
-//            );
-//
-//        }
 
         VBox sceneVBox = new VBox();
         Button btnEditGame = new Button("Edit Game");
@@ -907,11 +900,19 @@ public class Dashboard {
 
         btnEditGame.setOnAction((javafx.event.ActionEvent e) -> {
             try {
-
+                //int rating = 0;
                 //String gameTitle = gamesList.getSelectionModel().getSelectedItems().toString();
                 //gameTitle = gameTitle.substring(1, gameTitle.length() - 1);
-                int rating = (int) cBoxGameRating.getSelectionModel().getSelectedItem();
+               
+                    int rating = (int) cBoxGameRating.getSelectionModel().getSelectedItem();
+                    System.out.println("Edit game button rating check: " + rating);
+                
+                
+
                 String review = txtAreaReview.getText();
+                if(review == null){
+                    review = "";
+                }
 
                 System.out.println("check rating score: " + rating);
                 System.out.println("check review: " + review);
