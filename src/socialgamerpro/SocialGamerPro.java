@@ -328,6 +328,7 @@ public class SocialGamerPro extends Application{
                     }
                     try {
                         dbNewAccount.dbClose();
+                        createAccountStage.close();
                     } catch (SQLException ex) {
                         Logger.getLogger(SocialGamerPro.class.getName()).log(Level.SEVERE, null, ex);
                     }
