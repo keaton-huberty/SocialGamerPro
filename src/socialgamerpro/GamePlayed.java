@@ -5,6 +5,7 @@
  */
 package socialgamerpro;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,25 +35,29 @@ import javafx.stage.Stage;
  */
 public class GamePlayed {
 
-
-    
-    private int gamesPlayedID;
-
+    private int gamePlayedID;
+    private int userID;
     private String gameTitle;
     private int year;
     private String genre;
     private int rating;
     private String review;
     private Button btnReview;
+    private ArrayList<String> commentList;
+    
+    
+    
 
-    public GamePlayed(int gamesPlayedID, String gameTitle, int year, String genre, int rating, String review) {
-        this.gamesPlayedID = gamesPlayedID;
+    public GamePlayed(int gamesPlayedID, String gameTitle, int year, String genre, int rating, String review, ArrayList<String> comments, int userID) {
+        this.gamePlayedID = gamesPlayedID;
+        this.userID = userID;
         this.gameTitle = gameTitle;
         this.year = year;
         this.genre = genre;
         this.rating = rating;
         this.review = review;
         this.btnReview = new Button("Read Review");
+        this.commentList = comments;
 
         btnReview.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -60,6 +65,12 @@ public class GamePlayed {
                 launchReviewWindow();
                 System.out.println("REVIEW BUTTON WORKS! BUTTON WORKS!");
                 System.out.println("Here is the review: \n" + review);
+                for(String str: comments){
+                    System.out.println("Comment: " + str);
+                    System.out.println("Game title: " + getGameTitle());
+                    System.out.println("GameplayedID: " + getGamePlayedID());
+                    
+                }
             }
         });
     }
@@ -147,26 +158,33 @@ public class GamePlayed {
     public void setBtnReview(Button btnReview) {
         this.btnReview = btnReview;
     }
-    
-        /**
+
+    /**
      * @return the gamesPlayedID
      */
-    public int getGamesPlayedID() {
-        return gamesPlayedID;
+    public int getGamePlayedID() {
+        return gamePlayedID;
     }
 
     /**
      * @param gamesPlayedID the gamesPlayedID to set
      */
     public void setGamesPlayedID(int gamesPlayedID) {
-        this.gamesPlayedID = gamesPlayedID;
+        this.gamePlayedID = gamesPlayedID;
     }
 
     public void launchReviewWindow() {
 
         String comment = "";
-        TextArea txtAreaReview = new TextArea();
-        txtAreaReview.setPrefSize(200, 50);
+
+        for (String commentListl : commentList) {
+            comment += "\n" + commentListl ;
+        }
+
+        Label commentLabel = new Label(comment);
+
+        TextArea txtAreaComment = new TextArea();
+        txtAreaComment.setPrefSize(200, 50);
         Label reviewText = new Label("Review of " + this.gameTitle + ":\n" + this.review);
 
         GridPane grid = new GridPane();
@@ -178,13 +196,12 @@ public class GamePlayed {
         grid.getChildren().add(reviewText);
 
         Button btnAddComment = new Button("Add Comment");
-        
 
         VBox sceneVBox = new VBox();
         sceneVBox.setPadding(new Insets(20, 20, 20, 20));
         sceneVBox.setSpacing(15);
-        sceneVBox.getChildren().addAll(grid, txtAreaReview, btnAddComment);
-      
+        sceneVBox.getChildren().addAll(grid, commentLabel, txtAreaComment, btnAddComment);
+
         sceneVBox.setAlignment(Pos.TOP_CENTER);
 
         Stage addGameStage = new Stage();
@@ -199,8 +216,26 @@ public class GamePlayed {
 
         addGameStage.show();
 
-        btnAddComment.setOnAction((ActionEvent e) -> {
-
+        btnAddComment.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                String newComment = txtAreaComment.getText();
+                String userName = "";
+                DBUtility db = new DBUtility();
+                try {
+                    db.dbConnect();
+                } catch (SQLException ex) {
+                    Logger.getLogger(GamePlayed.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                try {
+                    userName = db.getUserName(userID);
+                    db.addComment(newComment, gamePlayedID, userID, userName);
+                    System.out.println("Add comment button pressed\n");
+                    addGameStage.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(GamePlayed.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         });
 
     }

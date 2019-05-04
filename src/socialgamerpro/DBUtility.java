@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,8 +38,11 @@ public class DBUtility {
     // watch this youtube video to add the "connector" - https://www.youtube.com/watch?v=nW13FmTdkjc
     private Connection conn = null;
     private Statement stmt = null;
+    private Statement stmtComment = null;
     private ResultSet resultSet = null;
+    private ResultSet resultSetComment = null;
     private PreparedStatement ps = null;
+    //ArrayList<String> commentList = new ArrayList<String>();
 
     private ObservableList<GamePlayed> gamesPlayedList = FXCollections.observableArrayList();
 
@@ -214,23 +218,34 @@ public class DBUtility {
     }
 
     public ObservableList<GamePlayed> getGamesPlayed(int userID) throws SQLException {
+        String commentor = "";
         int gamesPlayedID;
         String gameTitle;
         int year;
         String genre;
         int rating;
         String review;
+        //ArrayList<String> commentList = new ArrayList<String>();
         stmt = conn.createStatement();
 
 //        resultSet = stmt.executeQuery("SELECT Title, YearPublished, Genre "
 //                + "FROM GamesLibrary JOIN GamesPlayed "
 //                + "ON GamesLibrary.gameID = GamesPlayed.gameID "
 //                + "WHERE GamesPlayed.userID = " + userID + " ORDER BY Title");
+        //SAVE
         resultSet = stmt.executeQuery("SELECT GamesLibrary.Title, GamesLibrary.YearPublished, GamesLibrary.Genre, GamesPlayed.gamesPlayedID, GamesPlayed.rating, GamesPlayed.review "
                 + "FROM GamesLibrary JOIN GamesPlayed "
                 + "ON GamesLibrary.gameID = GamesPlayed.gameID "
                 + "WHERE GamesPlayed.userID = " + userID + " ORDER BY Title");
 
+//        resultSet = stmt.executeQuery("SELECT GamesLibrary.Title, GamesLibrary.YearPublished, GamesLibrary.Genre, GamesPlayed.gamesPlayedID, GamesPlayed.rating, GamesPlayed.review, Comments.comment"
+//                + "FROM GamesLibrary JOIN GamesPlayed "
+//                + "ON GamesLibrary.gameID = GamesPlayed.gameID"
+//                + "JOIN Comments on Comments.gameID = GamesLibrary.gameID "
+//                + "WHERE GamesPlayed.userID = " + userID + " ORDER BY Title");
+//        stmtComment = conn.createStatement();
+//        resultSetComment = stmtComment.executeQuery("SELECT comment FROM Comments WHERE gameID = '" + gamesPlayedID + "'");
+        //resultSetComment = stmtComment.executeQuery("SELECT Comments.comment, userLogin.userName FROM Comments JOIN userLogin WHERE GamesPlayed.gameID = " + " ");
         while (resultSet.next()) {
             gamesPlayedID = resultSet.getInt("gamesPlayedID");
             gameTitle = resultSet.getString("Title");
@@ -238,15 +253,46 @@ public class DBUtility {
             genre = resultSet.getString("Genre");
             rating = resultSet.getInt("rating");
             review = resultSet.getString("review");
-            GamePlayed game = new GamePlayed(gamesPlayedID, gameTitle, year, genre, rating, review);
+            
+            System.out.println("First gameplayedID: " + gamesPlayedID);
+            
+            ArrayList<String> commentList = new ArrayList<String>();
+            
+            stmtComment = conn.createStatement();
+            resultSetComment = stmtComment.executeQuery("SELECT * FROM Comments WHERE gameID = '" + gamesPlayedID + "'");
+            while (resultSetComment.next()) {
+                commentList.add(resultSetComment.getString("userName") + " says: " + resultSetComment.getString("comment"));
+                System.out.println("comment from resultset: " + resultSetComment.getString("comment"));
+                System.out.println("adding comment to arrayList");
+                System.out.println("gamePlayedID: " + gamesPlayedID);
+
+            }
+
+            GamePlayed game = new GamePlayed(gamesPlayedID, gameTitle, year, genre, rating, review, commentList, userID);
+            
 //            System.out.println(game.getGameTitle());
 //            System.out.println(game.getYear());
 //            System.out.println(game.getGenre());
 //            System.out.println("GAME ADDED TO LIST");
             gamesPlayedList.add(game);
+            
+            
         }
-
+//        for (String commentl : commentList) {
+//            System.out.println(" commentList: " + commentl);
+//        }
         return gamesPlayedList;
+    }
+
+    public void addComment(String comment, int gamePlayedID, int userID, String userName) throws SQLException {
+        //System.out.print("addComment pressed no statement yet\n");
+        stmtComment = conn.createStatement();
+        //System.out.print("addComment statement");
+
+        stmtComment.executeUpdate("INSERT INTO `Comments`(`gameID`, `userID`, `userName`, `comment`) VALUES ('" + gamePlayedID + "', '" + userID + "',  '" + userName + "','" + comment + "')");
+        System.out.println("addComment method called");
+        System.out.print("addComment method called \n");
+
     }
 
     //This method will insert a new entry into the followers table
@@ -254,6 +300,7 @@ public class DBUtility {
         stmt = conn.createStatement();
         stmt.executeUpdate("INSERT INTO `Followers`(`userID`, `userName`, `followingID`, `followingName`) VALUES ('" + userID + "','" + userName + "','" + followID + "','" + followUser + "')");
     }
+
     public void deleteFollow(String userName, String followUser, int userID, int followID) throws SQLException {
         stmt = conn.createStatement();
         stmt.executeUpdate("DELETE FROM Followers WHERE userName = '" + userName + "' AND followingName = '" + followUser + "'");
@@ -369,6 +416,19 @@ public class DBUtility {
         //checking to see if the user entered password equals the password stored in the database
         return inputEmail.equals(email);
 
+    }
+    
+    public String getUserName(int userID) throws SQLException{
+        
+        String userName = "";
+        stmt = conn.createStatement();
+        resultSet = stmt.executeQuery("SELECT userName FROM userLogin WHERE userID = '" + userID + "'");
+        
+        while(resultSet.next()){
+            userName = resultSet.getString("userName");
+        }
+ 
+        return userName;
     }
 
     // constructor

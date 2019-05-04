@@ -233,7 +233,7 @@ public class Dashboard {
             System.out.println("TableView selection index check: " + gamesTable.getSelectionModel().getSelectedIndex());
             int tableViewGameIndex = gamesTable.getSelectionModel().getSelectedIndex();
             GamePlayed selectedGame = (GamePlayed) gamesTable.getSelectionModel().getSelectedItem();
-            int gamesPlayedID = selectedGame.getGamesPlayedID();
+            int gamesPlayedID = selectedGame.getGamePlayedID();
 
             // System.out.println("GamePlayedID from tableView selection: " + gamePlayedID);
             try {
@@ -249,7 +249,7 @@ public class Dashboard {
             System.out.println("REMOVE GAME TableView selection index check: " + gamesTable.getSelectionModel().getSelectedIndex());
             int tableViewGameIndex = gamesTable.getSelectionModel().getSelectedIndex();
             GamePlayed selectedGame = (GamePlayed) gamesTable.getSelectionModel().getSelectedItem();
-            int gamesPlayedID = selectedGame.getGamesPlayedID();
+            int gamesPlayedID = selectedGame.getGamePlayedID();
 
             // System.out.println("GamePlayedID from tableView selection: " + gamePlayedID);
             try {
